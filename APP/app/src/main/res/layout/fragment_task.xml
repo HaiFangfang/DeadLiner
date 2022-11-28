@@ -3,22 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/shade_color"
     tools:context="HomeFragment">
 
-
-   <androidx.fragment.app.FragmentContainerView
-       android:id="@+id/task_catalog"
-       android:name="com.example.deadliner.TaskCatalog"
-       android:layout_height="match_parent"
-       android:layout_width="0dip"
-       android:layout_weight="1"
-       tools:layout="@layout/fragment_task_catalog"/>
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/task_context"
-        android:name="com.example.deadliner.TaskThing"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/task_catalog"
         android:layout_height="match_parent"
-        android:layout_width="0dip"
-        android:layout_weight="3"
-        tools:layout="@layout/fragment_task_thing" />
+        android:layout_width="0dp"
+        android:layout_weight="2"
+        android:background="@color/gray_blue"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/task_blocks"
+        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="5" />
 
 </LinearLayout>
