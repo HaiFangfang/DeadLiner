@@ -3,7 +3,8 @@
     <style name="Theme.DeadLiner" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">#FFC3DBDF</item>
-        <item name="colorPrimaryVariant">#FFDCFBFF</item>
+        <item name="colorPrimaryVariant">#FFC3DBDF</item>
+<!--        <item name="colorPrimaryVariant">#FFDCFBFF</item>-->
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>

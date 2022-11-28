@@ -9,4 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="blue">#FF039AC5</color>
     <color name="orange">#FFE99260</color>
+    <color name="gray_blue">#FFC3DBDF</color>
+    <color name="light_blue">#FFA2D9CC</color>
+    <color name="transparent">#00000000</color>
 </resources>
