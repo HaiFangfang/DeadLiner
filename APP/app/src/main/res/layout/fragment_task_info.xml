@@ -27,5 +27,11 @@
         android:layout_height="50dip"
         android:gravity="center"
         android:text="progress" />
+    <TextView
+        android:id="@+id/back"
+        android:layout_width="match_parent"
+        android:layout_height="50dip"
+        android:gravity="center"
+        android:text="back" />
 
 </LinearLayout>

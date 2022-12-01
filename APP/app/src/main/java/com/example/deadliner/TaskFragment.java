@@ -9,6 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -81,13 +83,22 @@ public class TaskFragment extends Fragment {
         taskBlocks.setLayoutManager(new LinearLayoutManager(getContext()));
         return tbs;
     }
-    public class BlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+    public interface BlockClickListener {
+        public void onBlockClick(RecyclerView parent , View view , String fileName );
 
+    }
+
+
+
+
+    public class BlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements View.OnClickListener{
+        private BlockClickListener BlockClickListener = null;
         @NonNull
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             if(viewType==Blocks.TaskBlock.ordinal()){
                 View viewt= LayoutInflater.from(getContext()).inflate(R.layout.module_task_block,parent,false);
+                viewt.setOnClickListener(this);
                 return new TBlockViewHolder(viewt);
             }else if(viewType==Blocks.TaskBlockNew.ordinal()){
                 View viewn= LayoutInflater.from(getContext()).inflate(R.layout.module_task_new,parent,false);
@@ -114,6 +125,20 @@ public class TaskFragment extends Fragment {
         public int getItemViewType(int position) {
             return position <TaskBlockList.size() ? Blocks.TaskBlock.ordinal() : Blocks.TaskBlockNew.ordinal();
         }
+        public void setBlockClickListener(BlockClickListener clickListener){
+            this.BlockClickListener = clickListener;
+        }
+        @Override
+        public void onClick(View view) {
+            jump();
+        }
+        public void jump(){
+            FragmentManager fm=getParentFragmentManager();
+            fm.beginTransaction()
+              .addToBackStack(null) //将当前fragment加入到返回栈中
+              .replace(R.id.tasks, new TaskInfo()).commit();
+        }
+
     }
 
     public static class TBlockViewHolder extends RecyclerView.ViewHolder{
