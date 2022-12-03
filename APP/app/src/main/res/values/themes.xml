@@ -4,7 +4,7 @@
         <!-- Primary brand color. -->
         <item name="colorPrimary">#FFC3DBDF</item>
         <item name="colorPrimaryVariant">#FFC3DBDF</item>
-<!--        <item name="colorPrimaryVariant">#FFDCFBFF</item>-->
+        <!--        <item name="colorPrimaryVariant">#FFDCFBFF</item>-->
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
@@ -14,5 +14,20 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="android:textColor">#FF1B282E</item>
+    </style>
+
+    <style name="Theme.DeadLiner.AppWidgetContainerParent" parent="@android:style/Theme.DeviceDefault">
+        <!-- Radius of the outer bound of widgets to make the rounded corners -->
+        <item name="appWidgetRadius">16dp</item>
+        <!--
+        Radius of the inner view's bound of widgets to make the rounded corners.
+        It needs to be 8dp or less than the value of appWidgetRadius
+        -->
+        <item name="appWidgetInnerRadius">8dp</item>
+    </style>
+
+    <style name="Theme.DeadLiner.AppWidgetContainer" parent="Theme.DeadLiner.AppWidgetContainerParent">
+        <!-- Apply padding to avoid the content of the widget colliding with the rounded corners -->
+        <item name="appWidgetPadding">16dp</item>
     </style>
 </resources>

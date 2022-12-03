@@ -65,7 +65,7 @@ private TextView back;
         // Inflate the layout for this fragment
         View tinfo = inflater.inflate(R.layout.fragment_task_info, container, false);
         this.back=tinfo.findViewById(R.id.back);
-        this.back.setOnClickListener(v -> { Toast.makeText(getContext(), "qwe", Toast.LENGTH_SHORT).show();
+        this.back.setOnClickListener(v -> {
             FragmentManager fm=getParentFragmentManager();
             fm.popBackStack();
         });
