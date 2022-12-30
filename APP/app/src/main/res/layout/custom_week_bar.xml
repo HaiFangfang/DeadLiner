@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_week"
+    android:layout_width="match_parent"
+    android:layout_height="30dp"
+    android:background="@color/gray_blue"
+    android:minHeight="30dp"
+    android:orientation="horizontal"
+    android:paddingBottom="0dp"
+    android:paddingTop="0dp"
+    android:textColor="#eeeeee"
+    tools:ignore="HardcodedText">
+
+    <TextView
+        android:layout_marginStart="10dp"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/sun"
+        android:textSize="12sp" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/mon"
+        android:textSize="12sp" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/tue"
+        android:textSize="12sp" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/wed"
+        android:textSize="12sp" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/thu"
+        android:textSize="12sp" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/fri"
+        android:textSize="12sp" />
+
+    <TextView
+        android:layout_marginEnd="10dp"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/sat"
+        android:textSize="12sp" />
+</merge>

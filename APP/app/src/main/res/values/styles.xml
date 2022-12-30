@@ -9,4 +9,36 @@
         <item name="android:background">?android:attr/colorBackground</item>
         <item name="android:textColor">?android:attr/textColorPrimary</item>
     </style>
+    <style name="TransparentBottomSheetStyle" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/SheetStyle</item>
+    </style>
+
+    <style name="SheetStyle" parent="android:Widget">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="behavior_peekHeight">auto</item>
+        <item name="behavior_hideable">true</item>
+        <item name="behavior_skipCollapsed">false</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+    <!--对话框样式-->
+    <style name="mdialog" parent="Theme.AppCompat.Dialog">
+        <!--背景透明-->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <!--没有标题-->
+        <item name="android:windowNoTitle">true</item>
+        <!--背景昏暗-->
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.2</item>
+    </style>
+    <style name="Theme.picker" parent="Theme.AppCompat.Light">
+        <!--分割线颜色-->
+        <item name="colorControlNormal">@color/transparent</item>
+        <item name="android:editTextStyle">@style/Widget.EditText.White</item>
+    </style>
+    <style name="Widget.EditText.White" parent="@android:style/Widget.EditText">
+        <!--文字颜色大小-->
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">15dp</item>
+    </style>
+
 </resources>

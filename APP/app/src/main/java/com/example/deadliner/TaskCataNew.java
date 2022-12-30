@@ -1,5 +1,7 @@
 package com.example.deadliner;
 
-public class TaskCataNew {
+import android.widget.TextView;
 
+public class TaskCataNew {
+public TextView newcata;
 }
