@@ -7,7 +7,7 @@
 
     <style name="Widget.DeadLiner.AppWidget.InnerView" parent="android:Widget">
         <item name="android:background">?android:attr/colorBackground</item>
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:textColor">#AA000000</item>
     </style>
     <style name="TransparentBottomSheetStyle" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/SheetStyle</item>

@@ -15,9 +15,10 @@ public class MyDBhelper extends SQLiteOpenHelper {
             //primary key 将id列设为主键    autoincrement表示id列是自增长的
             "id integer primary key autoincrement," +
             "name text NOT NULL," +
-            "start_time text," +
-            "ddl text," +
+            "start_time text NOT NULL," +
+            "ddl text NOT NULL," +
             "status boolean NOT NULL," +
+            "color integer NOT NULL," +
             "cata integer NOT NULL)";
     public static final String CREATE_CATAS = "create table cata(" +
             //primary key 将id列设为主键    autoincrement表示id列是自增长的
@@ -25,6 +26,13 @@ public class MyDBhelper extends SQLiteOpenHelper {
             "name text NOT NULL," +
             "num_open integer default 0," +
             "num_all integer default 0)";
+    public static final String CREATE_PROGRESS = "create table progress(" +
+            //primary key 将id列设为主键    autoincrement表示id列是自增长的
+            "id integer primary key autoincrement," +
+            "name text NOT NULL," +
+            "seq integer NOT NULL,"+
+            "status boolean NOT NULL," +
+            "task integer NOT NULL)";
 
     private SQLiteDatabase db;
 
@@ -43,6 +51,7 @@ public class MyDBhelper extends SQLiteOpenHelper {
         try{
             db.execSQL(CREATE_CATAS);
             db.execSQL(CREATE_TASKS);
+            db.execSQL(CREATE_PROGRESS);
         } catch (Exception e){
             Log.e("exp",e.toString());
         }

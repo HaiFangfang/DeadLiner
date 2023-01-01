@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <CheckBox
+        android:id="@+id/detail_check"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/detail_name"/>
+<TextView
+    android:id="@+id/detail_name"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    app:layout_constraintLeft_toRightOf="@id/detail_check"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintRight_toLeftOf="@id/detail_del"
+    />
+    <EditText
+        android:id="@+id/detail_name_edit"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintLeft_toRightOf="@id/detail_check"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/detail_del"
+        android:visibility="invisible"
+        />
+
+    <ImageView
+        android:id="@+id/detail_del"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@color/trans_light_blue_600"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/detail_name"
+        />
+    <ImageView
+        android:id="@+id/detail_save"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@color/trans_light_blue_600"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/detail_name"
+        android:visibility="invisible"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>

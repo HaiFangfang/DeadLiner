@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -26,7 +28,7 @@ public class CustomMonthView extends MonthView {
      */
     private Paint mTextPaint = new Paint();
 
-
+    private Paint mRectPaint = new Paint();
     /**
      * 24节气画笔
      */
@@ -61,7 +63,9 @@ public class CustomMonthView extends MonthView {
         super(context);
 
         mTextPaint.setTextSize(dipToPx(context, 8));
-        mTextPaint.setColor(0xffffffff);
+        PorterDuffXfermode mode=new PorterDuffXfermode(PorterDuff.Mode.DARKEN);
+        mTextPaint.setXfermode(mode);
+        mTextPaint.setColor(Color.GRAY);
         mTextPaint.setAntiAlias(true);
         mTextPaint.setFakeBoldText(true);
 
@@ -100,20 +104,24 @@ public class CustomMonthView extends MonthView {
     @Override
     protected void onPreviewHook() {
         mSolarTermTextPaint.setTextSize(mCurMonthLunarTextPaint.getTextSize());
-        mRadius = Math.min(mItemWidth, mItemHeight) / 11 * 5;
+        mRadius = Math.min(mItemWidth, mItemHeight) / 11 * 5+20;
     }
 
 
     @Override
     protected boolean onDrawSelected(Canvas canvas, Calendar calendar, int x, int y, boolean hasScheme) {
-//        int cx = x + mItemWidth / 2;
-//        int cy = y + mItemHeight / 2;
-//        if (isTouchDown && mCurrentItem == mItems.indexOf(getIndex())) {
-//            //点击当前选中的item, 缩放效果提示
-//            canvas.drawCircle(cx, cy, mRadius - dipToPx(getContext(), 4), mSelectedPaint);
-//        } else {
-//            canvas.drawCircle(cx, cy, mRadius, mSelectedPaint);
-//        }
+        int cx = x + mItemWidth / 2+3;
+        int cy = y + mItemHeight / 2;
+        PorterDuffXfermode mode=new PorterDuffXfermode(PorterDuff.Mode.DARKEN);
+        mSelectedPaint.setColor(0x88BCE6EE);
+        mSelectedPaint.setXfermode(mode);
+        if (isTouchDown && mCurrentItem == mItems.indexOf(getIndex())) {
+            //点击当前选中的item, 缩放效果提示
+            canvas.drawCircle(cx, cy, mRadius - dipToPx(getContext(), 4), mSelectedPaint);
+        } else {
+//            canvas.drawRect(x,y,x + mItemWidth,y + mItemHeight, mSelectedPaint);
+            canvas.drawCircle(cx, cy, mRadius, mSelectedPaint);
+        }
         return true;
     }
 
@@ -135,21 +143,60 @@ public class CustomMonthView extends MonthView {
     protected void onDrawText(Canvas canvas, Calendar calendar, int x, int y, boolean hasScheme, boolean isSelected) {
         int cx = x + mItemWidth / 2;
         int cy = y + mItemHeight / 2;
-        int top = y - mItemHeight / 6;
+        int top = y - mItemHeight / 3;
 
         if (calendar.isCurrentDay() && !isSelected) {
-            canvas.drawCircle(cx, cy, mRadius, mCurrentDayPaint);
+            canvas.drawCircle(cx+2, cy, mRadius, mSelectedPaint);
         }
 
-        if (hasScheme) {
-            canvas.drawCircle(x + mItemWidth - mPadding - mCircleRadius / 2, y + mPadding + mCircleRadius, mCircleRadius, mSchemeBasicPaint);
-            for(Calendar.Scheme tmp:calendar.getSchemes()){
-                mTextPaint.setColor(tmp.getShcemeColor());
-//                Toast.makeText(getContext(),tmp.toString(), Toast.LENGTH_SHORT).show();
-                canvas.drawText(tmp.getScheme(), x + mItemWidth - mPadding - mCircleRadius, y + mPadding + mSchemeBaseLine, mTextPaint);
-            }
-
-        }
+//        if (hasScheme) {
+//            int oleft=x+20;
+//            int oright=x+mItemWidth-20;
+//            int end=y+mItemHeight-9;
+//            int start=y+mItemHeight/4;
+//
+//            for(Calendar.Scheme tmp:calendar.getSchemes()){
+//                int color=tmp.getShcemeColor();
+//                float hsv[]=new float[3];
+//                Color.colorToHSV(color,hsv);
+//                float ratio=hsv[0]/360;
+//                float spand=end-start;
+//                float stripy=start+spand*ratio;
+//
+//                mTextPaint.setColor(tmp.getShcemeColor());
+//                canvas.drawCircle(oleft,stripy,8,mTextPaint);
+//                canvas.drawCircle(oright,stripy,8,mTextPaint);
+//                if(tmp.getScheme().equals("D")){
+//                    if(calendar.getWeek()==6){
+//                        canvas.drawRect(x,stripy-8,oright,stripy+8,mTextPaint);
+//                    }else if(calendar.getWeek()==0){
+//                        canvas.drawRect(oleft,stripy-8,x+mItemWidth,stripy+8,mTextPaint);
+//                    }else{
+//                        canvas.drawRect(x,stripy-8,x+mItemWidth,stripy+8,mTextPaint);
+//                    }
+//
+//                }else if(tmp.getScheme().equals("S")){
+//                    if(calendar.getWeek()==6){
+//                        canvas.drawRect(oleft,stripy-8,oright,stripy+8,mTextPaint);
+//                    }else{
+//                        canvas.drawRect(oleft,stripy-8,x+mItemWidth,stripy+8,mTextPaint);
+//                    }
+//                }else if(tmp.getScheme().equals("E")){
+//                   if(calendar.getWeek()==0){
+//                        canvas.drawRect(oleft,stripy-8,oright,stripy+8,mTextPaint);
+//                    }else{
+//                        canvas.drawRect(x,stripy-8,oright,stripy+8,mTextPaint);
+//                    }
+//                }
+//                else{
+//                    canvas.drawRect(oleft,stripy-8,oright,stripy+8,mTextPaint);
+//                }
+////
+////                Toast.makeText(getContext(),tmp.toString(), Toast.LENGTH_SHORT).show();
+////                canvas.drawText(tmp.getScheme(), x + mItemWidth - mPadding - mCircleRadius, y + mPadding + mSchemeBaseLine, mTextPaint);
+//            }
+//
+//        }
 
         //当然可以换成其它对应的画笔就不麻烦，
         if (calendar.isWeekend() && calendar.isCurrentMonth()) {
@@ -160,9 +207,9 @@ public class CustomMonthView extends MonthView {
             mOtherMonthLunarTextPaint.setColor(0xFF489dff);
             mOtherMonthTextPaint.setColor(0xFF489dff);
         } else {
-            mCurMonthTextPaint.setColor(0xff333333);
+            mCurMonthTextPaint.setColor(0x99333333);
             mCurMonthLunarTextPaint.setColor(0xffCFCFCF);
-            mSchemeTextPaint.setColor(0xff333333);
+            mSchemeTextPaint.setColor(0x99333333);
             mSchemeLunarTextPaint.setColor(0xffCFCFCF);
 
             mOtherMonthTextPaint.setColor(0xFFe1e1e1);
@@ -170,26 +217,90 @@ public class CustomMonthView extends MonthView {
         }
 
         if (isSelected) {
+            mSelectTextPaint.setColor(0xAA000000);
+//            PorterDuffXfermode mode  = new PorterDuffXfermode(PorterDuff.Mode.DARKEN);
+//            mSelectTextPaint.setXfermode(mode);
             canvas.drawText(String.valueOf(calendar.getDay()), cx, mTextBaseLine + top,
                     mSelectTextPaint);
-            canvas.drawText(calendar.getLunar(), cx, mTextBaseLine + y + mItemHeight / 10, mSelectedLunarTextPaint);
+//            canvas.drawText(calendar.getLunar(), cx, mTextBaseLine + y + mItemHeight / 10, mSelectedLunarTextPaint);
         } else
         if (hasScheme) {
 //
             canvas.drawText(String.valueOf(calendar.getDay()), cx, mTextBaseLine + top,
                     calendar.isCurrentMonth() ? mSchemeTextPaint : mOtherMonthTextPaint);
 
-            canvas.drawText(calendar.getLunar(), cx, mTextBaseLine + y + mItemHeight / 10,
-                    !TextUtils.isEmpty(calendar.getSolarTerm()) ? mSolarTermTextPaint : mSchemeLunarTextPaint);
+//            canvas.drawText(calendar.getLunar(), cx, mTextBaseLine + y + mItemHeight / 10,
+//                    !TextUtils.isEmpty(calendar.getSolarTerm()) ? mSolarTermTextPaint : mSchemeLunarTextPaint);
         } else {
             canvas.drawText(String.valueOf(calendar.getDay()), cx, mTextBaseLine + top,
                     calendar.isCurrentDay() ? mCurDayTextPaint :
                             calendar.isCurrentMonth() ? mCurMonthTextPaint : mOtherMonthTextPaint);
 
-            canvas.drawText(calendar.getLunar(), cx, mTextBaseLine + y + mItemHeight / 10,
-                    calendar.isCurrentDay() ? mCurDayLunarTextPaint :
-                            calendar.isCurrentMonth() ? !TextUtils.isEmpty(calendar.getSolarTerm()) ? mSolarTermTextPaint  :
-                                    mCurMonthLunarTextPaint : mOtherMonthLunarTextPaint);
+//            canvas.drawText(calendar.getLunar(), cx, mTextBaseLine + y + mItemHeight / 10,
+//                    calendar.isCurrentDay() ? mCurDayLunarTextPaint :
+//                            calendar.isCurrentMonth() ? !TextUtils.isEmpty(calendar.getSolarTerm()) ? mSolarTermTextPaint  :
+//                                    mCurMonthLunarTextPaint : mOtherMonthLunarTextPaint);
+        }
+
+        if (hasScheme) {
+            int oleft=x+20;
+            int oright=x+mItemWidth-20;
+            int end=y+mItemHeight-9;
+            int start=y+mItemHeight/4;
+
+            for(Calendar.Scheme tmp:calendar.getSchemes()){
+                int color=tmp.getShcemeColor();
+                float hsv[]=new float[3];
+                Color.colorToHSV(color,hsv);
+                float ratio=hsv[0]/360;
+                float spand=end-start;
+                float stripy=start+spand*ratio;
+
+                mTextPaint.setColor(tmp.getShcemeColor());
+                canvas.drawCircle(oleft,stripy,8,mTextPaint);
+                canvas.drawCircle(oright,stripy,8,mTextPaint);
+                if(tmp.getScheme().equals("D")){
+                    if(calendar.getWeek()==6){
+                        canvas.drawRect(x,stripy-8,oright,stripy+8,mTextPaint);
+                    }else if(calendar.getWeek()==0){
+                        canvas.drawRect(oleft,stripy-8,x+mItemWidth,stripy+8,mTextPaint);
+                    }else{
+                        canvas.drawRect(x,stripy-8,x+mItemWidth,stripy+8,mTextPaint);
+                    }
+
+                }else if(tmp.getScheme().equals("S")){
+                    if(calendar.getWeek()==6){
+                        canvas.drawRect(oleft,stripy-8,oright,stripy+8,mTextPaint);
+                    }else{
+                        canvas.drawRect(oleft,stripy-8,x+mItemWidth,stripy+8,mTextPaint);
+                    }
+                }else if(tmp.getScheme().equals("E")){
+                    if(calendar.getWeek()==0){
+                        canvas.drawRect(oleft,stripy-8,oright,stripy+8,mTextPaint);
+                    }else{
+                        canvas.drawRect(x,stripy-8,oright,stripy+8,mTextPaint);
+                    }
+                }
+                else{
+                    canvas.drawRect(oleft,stripy-8,oright,stripy+8,mTextPaint);
+                }
+//
+//                Toast.makeText(getContext(),tmp.toString(), Toast.LENGTH_SHORT).show();
+//                canvas.drawText(tmp.getScheme(), x + mItemWidth - mPadding - mCircleRadius, y + mPadding + mSchemeBaseLine, mTextPaint);
+            }
+
+        }
+
+        mRectPaint.setStyle(Paint.Style.STROKE);
+        mRectPaint.setStrokeWidth(dipToPx(getContext(), 1.3f));
+        mRectPaint.setColor(0x33039AC5);
+        PorterDuffXfermode mode=new PorterDuffXfermode(PorterDuff.Mode.DARKEN);
+        mRectPaint.setXfermode(mode);
+        if(calendar.getWeek()==6){
+            canvas.drawLine(x+2 , y-2, x+mItemWidth+2 , y-2, mRectPaint);
+        }else{
+            canvas.drawLine(x+mItemWidth+2, y-2, x +mItemWidth+2, y + mItemHeight-2, mRectPaint);
+            canvas.drawLine(x+2 , y-2, x+mItemWidth+2 , y-2, mRectPaint);
         }
     }
 

@@ -1,21 +1,29 @@
 package com.example.deadliner;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.icu.text.DateFormat;
+import android.icu.text.SimpleDateFormat;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Vibrator;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -26,7 +34,11 @@ import com.haibin.calendarview.CalendarLayout;
 import com.haibin.calendarview.CalendarView;
 import com.haibin.calendarview.TrunkBranchAnnals;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -44,15 +56,17 @@ public class HomeFragment extends Fragment implements
     TextView mTextMonthDay;
     RelativeLayout mRelativeTool;
     TextView mTextYear;
-
+    List<TaskBlock> TaskList =new ArrayList<>();
+    List<TaskBlock> inSchList= new ArrayList<>();
     TextView mTextLunar;
-
+    RecyclerView inSch;
     TextView mTextCurrentDay;
-
+    inSchAdapter inschAdapter;
     private int mYear;
     CalendarLayout mCalendarLayout;
     CalendarView mCalendarView;
     View home;
+    String daySelectd;
 
 
 
@@ -127,6 +141,10 @@ public class HomeFragment extends Fragment implements
         // Inflate the layout for this fragment
         View home=inflater.inflate(R.layout.fragment_home, container, false);
         this.home=home;
+        inSch=home.findViewById(R.id.insche_view);
+        inschAdapter=new inSchAdapter();
+        inSch.setAdapter(inschAdapter);
+        inSch.setLayoutManager(new LinearLayoutManager(getContext()));
 
         return home;
     }
@@ -136,82 +154,143 @@ public class HomeFragment extends Fragment implements
         super.onViewCreated(view, savedInstanceState);
         initView();
         initData();
+        android.icu.util.Calendar c= android.icu.util.Calendar.getInstance();
+        daySelectd=c.get(android.icu.util.Calendar.YEAR
+        )+"-"+(c.get(android.icu.util.Calendar.MONTH)+1)+"-"+c.get(android.icu.util.Calendar.DATE);
+        Toast.makeText(getContext(), daySelectd, Toast.LENGTH_SHORT).show();
+        taskClassify(daySelectd);
     }
 
     protected void initData() {
-
+        TaskList.clear();
         final int year = mCalendarView.getCurYear();
         final int month = mCalendarView.getCurMonth();
-
         Map<String, Calendar> map = new HashMap<>();
-            for (int y = 2022; y < 2023; y++) {
-            for (int m = 1; m <= 12; m++) {
-Calendar c=getSchemeCalendar(y, m, 1, 0xFF40db25, "假");
-c.addScheme(0xFFe69138, "游");
-                map.put(c.toString(),c);
-//
-//                map.put(getSchemeCalendar(y, m, 2, 0xFFe69138, "游").toString(),
-//                        getSchemeCalendar(y, m, 2, 0xFFe69138, "游"));
-//                map.put(getSchemeCalendar(y, m, 3, 0xFFdf1356, "事").toString(),
-//                        getSchemeCalendar(y, m, 3, 0xFFdf1356, "事"));
-//                map.put(getSchemeCalendar(y, m, 4, 0xFFaacc44, "车").toString(),
-//                        getSchemeCalendar(y, m, 4, 0xFFaacc44, "车"));
-//                map.put(getSchemeCalendar(y, m, 5, 0xFFbc13f0, "驾").toString(),
-//                        getSchemeCalendar(y, m, 5, 0xFFbc13f0, "驾"));
-//                map.put(getSchemeCalendar(y, m, 6, 0xFF542261, "记").toString(),
-//                        getSchemeCalendar(y, m, 6, 0xFF542261, "记"));
-//                map.put(getSchemeCalendar(y, m, 7, 0xFF4a4bd2, "会").toString(),
-//                        getSchemeCalendar(y, m, 7, 0xFF4a4bd2, "会"));
-//                map.put(getSchemeCalendar(y, m, 8, 0xFFe69138, "车").toString(),
-//                        getSchemeCalendar(y, m, 8, 0xFFe69138, "车"));
-//                map.put(getSchemeCalendar(y, m, 9, 0xFF542261, "考").toString(),
-//                        getSchemeCalendar(y, m, 9, 0xFF542261, "考"));
-//                map.put(getSchemeCalendar(y, m, 10, 0xFF87af5a, "记").toString(),
-//                        getSchemeCalendar(y, m, 10, 0xFF87af5a, "记"));
-//                map.put(getSchemeCalendar(y, m, 11, 0xFF40db25, "会").toString(),
-//                        getSchemeCalendar(y, m, 11, 0xFF40db25, "会"));
-//                map.put(getSchemeCalendar(y, m, 12, 0xFFcda1af, "游").toString(),
-//                        getSchemeCalendar(y, m, 12, 0xFFcda1af, "游"));
-//                map.put(getSchemeCalendar(y, m, 13, 0xFF95af1a, "事").toString(),
-//                        getSchemeCalendar(y, m, 13, 0xFF95af1a, "事"));
-//                map.put(getSchemeCalendar(y, m, 14, 0xFF33aadd, "学").toString(),
-//                        getSchemeCalendar(y, m, 14, 0xFF33aadd, "学"));
-//                map.put(getSchemeCalendar(y, m, 15, 0xFF1aff1a, "码").toString(),
-//                        getSchemeCalendar(y, m, 15, 0xFF1aff1a, "码"));
-//                map.put(getSchemeCalendar(y, m, 16, 0xFF22acaf, "驾").toString(),
-//                        getSchemeCalendar(y, m, 16, 0xFF22acaf, "驾"));
-//                map.put(getSchemeCalendar(y, m, 17, 0xFF99a6fa, "校").toString(),
-//                        getSchemeCalendar(y, m, 17, 0xFF99a6fa, "校"));
-//                map.put(getSchemeCalendar(y, m, 18, 0xFFe69138, "车").toString(),
-//                        getSchemeCalendar(y, m, 18, 0xFFe69138, "车"));
-//                map.put(getSchemeCalendar(y, m, 19, 0xFF40db25, "码").toString(),
-//                        getSchemeCalendar(y, m, 19, 0xFF40db25, "码"));
-//                map.put(getSchemeCalendar(y, m, 20, 0xFFe69138, "火").toString(),
-//                        getSchemeCalendar(y, m, 20, 0xFFe69138, "火"));
-//                map.put(getSchemeCalendar(y, m, 21, 0xFF40db25, "假").toString(),
-//                        getSchemeCalendar(y, m, 21, 0xFF40db25, "假"));
-//                map.put(getSchemeCalendar(y, m, 22, 0xFF99a6fa, "记").toString(),
-//                        getSchemeCalendar(y, m, 22, 0xFF99a6fa, "记"));
-//                map.put(getSchemeCalendar(y, m, 23, 0xFF33aadd, "假").toString(),
-//                        getSchemeCalendar(y, m, 23, 0xFF33aadd, "假"));
-//                map.put(getSchemeCalendar(y, m, 24, 0xFF40db25, "校").toString(),
-//                        getSchemeCalendar(y, m, 24, 0xFF40db25, "校"));
-//                map.put(getSchemeCalendar(y, m, 25, 0xFF1aff1a, "假").toString(),
-//                        getSchemeCalendar(y, m, 25, 0xFF1aff1a, "假"));
-//                map.put(getSchemeCalendar(y, m, 26, 0xFF40db25, "议").toString(),
-//                        getSchemeCalendar(y, m, 26, 0xFF40db25, "议"));
-//                map.put(getSchemeCalendar(y, m, 27, 0xFF95af1a, "假").toString(),
-//                        getSchemeCalendar(y, m, 27, 0xFF95af1a, "假"));
-//                map.put(getSchemeCalendar(y, m, 28, 0xFF40db25, "码").toString(),
-//                        getSchemeCalendar(y, m, 28, 0xFF40db25, "码"));
-//                map.put(getSchemeCalendar(y, m, 1, 0xFF40db25, "假").toString(),
-//                        getSchemeCalendar(y, m, 1, 0xFF40db25, "假"));
+        Cursor tasks=MainActivity.getdb().getWritableDatabase().query("task",null,null,null,null,null,null);
+        while(tasks.moveToNext()){
+            String id= tasks.getString(0);
+            String name=tasks.getString(1);
+            String sttime=tasks.getString(2);
+            String ddl=tasks.getString(3);
+            String ddlkey="";
+            String stkey="";
+            int color=tasks.getInt(5);
+//            Toast.makeText(getContext(), String.valueOf(color), Toast.LENGTH_SHORT).show();
+            if(!sttime.isEmpty()&&!ddl.isEmpty()){
+                String strs[]=ddl.split(" ");
+                String strtrs[]=strs[0].split("-");
+                ddlkey=strtrs[0]+strtrs[1]+strtrs[2];
+                String strs1[]=sttime.split(" ");
+                String strtrs1[]=strs1[0].split("-");
+                stkey=strtrs1[0]+strtrs1[1]+strtrs1[2];
+                android.icu.util.Calendar ddlutil=android.icu.util.Calendar.getInstance();
+                android.icu.util.Calendar stutil=android.icu.util.Calendar.getInstance();
+                if(ddlkey.compareTo(stkey)==0){//the same day
+                    ddlutil.set(Integer.valueOf(strtrs[0]),Integer.valueOf(strtrs[1])-1,Integer.valueOf(strtrs[2]),0,0);
+                    stutil.set(Integer.valueOf(strtrs1[0]),Integer.valueOf(strtrs1[1])-1,Integer.valueOf(strtrs1[2]),0,0);
+                    Toast.makeText(getContext(), transToKey(ddlutil), Toast.LENGTH_SHORT).show();
+                    Calendar c=map.get(transToKey(ddlutil));
+                    if(c==null){
+                        c=getSchemeCalendar(Integer.valueOf(strtrs[0]), Integer.valueOf(strtrs[1]), Integer.valueOf(strtrs[2]), color, "SE");
+                        map.put(c.toString(),c);
+                    }else{
+                        c.addScheme(color, "SE");
+                    }
+                }else if(transToKey(ddlutil).compareTo(transToKey(stutil))<0){//ddl before starttime
+
+                    ddlutil.set(Integer.valueOf(strtrs[0]),Integer.valueOf(strtrs[1])-1,Integer.valueOf(strtrs[2]),0,0);
+                    stutil.set(Integer.valueOf(strtrs1[0]),Integer.valueOf(strtrs1[1])-1,Integer.valueOf(strtrs1[2]),0,0);
+//                    Toast.makeText(getContext(), strtrs[0]+strtrs[1]+strtrs[2], Toast.LENGTH_SHORT).show();
+                    Calendar c=map.get(transToKey(ddlutil));
+                    if(c==null){
+                        c=getSchemeCalendar(Integer.valueOf(strtrs[0]), Integer.valueOf(strtrs[1]), Integer.valueOf(strtrs[2]), color, "E");
+                        map.put(c.toString(),c);
+                    }else{
+                        c.addScheme(color, "E");
+                    }
+                    ddlutil.add(5,1);
+                    String st=String.valueOf(ddlutil.get(android.icu.util.Calendar.YEAR))+String.valueOf(ddlutil.get(android.icu.util.Calendar.MONTH))+String.valueOf(ddlutil.get(android.icu.util.Calendar.DATE));
+                    String st2=String.valueOf(stutil.get(android.icu.util.Calendar.YEAR))+String.valueOf(stutil.get(android.icu.util.Calendar.MONTH))+String.valueOf(stutil.get(android.icu.util.Calendar.DATE));
+//                    Toast.makeText(getContext(), st+" "+st2, Toast.LENGTH_SHORT).show();
+//                    Log.e("123",String.valueOf(ddlutil.get(android.icu.util.Calendar.YEAR))+String.valueOf(ddlutil.get(android.icu.util.Calendar.MONTH))+String.valueOf(ddlutil.get(android.icu.util.Calendar.DATE)));
+//                    Log.e("123",String.valueOf(stutil.get(android.icu.util.Calendar.YEAR))+String.valueOf(stutil.get(android.icu.util.Calendar.MONTH))+String.valueOf(stutil.get(android.icu.util.Calendar.DATE)));
+                    while(ddlutil.before(stutil)){
+//                        Log.e("123",String.valueOf(ddlutil.get(android.icu.util.Calendar.YEAR))+String.valueOf(ddlutil.get(android.icu.util.Calendar.MONTH))+String.valueOf(ddlutil.get(android.icu.util.Calendar.DATE)));
+//                        Log.e("123",String.valueOf(stutil.get(android.icu.util.Calendar.YEAR))+String.valueOf(stutil.get(android.icu.util.Calendar.MONTH))+String.valueOf(stutil.get(android.icu.util.Calendar.DATE)));
+                        c=map.get(transToKey(ddlutil));
+                        if(c==null){
+                            c=getSchemeCalendar(ddlutil.get(android.icu.util.Calendar.YEAR),ddlutil.get(android.icu.util.Calendar.MONTH)+1,ddlutil.get(android.icu.util.Calendar.DATE),color,"D");
+
+                            map.put(c.toString(),c);
+                        }else{
+                            c.addScheme(color, "D");
+                        }
+                        ddlutil.add(5,1);
+                    }
+                    c=map.get(transToKey(stutil));
+                    if(c==null){
+                        c=getSchemeCalendar(Integer.valueOf(strtrs1[0]), Integer.valueOf(strtrs1[1]), Integer.valueOf(strtrs1[2]), color, "S");
+                        map.put(c.toString(),c);
+                    }else{
+                        c.addScheme(color, "S");
+                    }
+
+                }else{//ddl after start
+
+                    ddlutil.set(Integer.valueOf(strtrs[0]),Integer.valueOf(strtrs[1])-1,Integer.valueOf(strtrs[2]),0,0);
+                    stutil.set(Integer.valueOf(strtrs1[0]),Integer.valueOf(strtrs1[1])-1,Integer.valueOf(strtrs1[2]),0,0);
+//                    Toast.makeText(getContext(), strtrs[0]+strtrs[1]+strtrs[2], Toast.LENGTH_SHORT).show();
+                    Calendar c=map.get(transToKey(stutil));
+                    if(c==null){
+
+//                        Toast.makeText(getContext(), stkey, Toast.LENGTH_SHORT).show();
+                        c=getSchemeCalendar(Integer.valueOf(strtrs1[0]), Integer.valueOf(strtrs1[1]), Integer.valueOf(strtrs1[2]), color, "S");
+                        map.put(c.toString(),c);
+                    }else{
+                        c.addScheme(color, "S");
+                    }
+                    Log.e("32112345",transToKey(stutil));
+                    stutil.add(5,1);
+
+//                    String st=String.valueOf(ddlutil.get(android.icu.util.Calendar.YEAR))+String.valueOf(ddlutil.get(android.icu.util.Calendar.MONTH))+String.valueOf(ddlutil.get(android.icu.util.Calendar.DATE));
+//                    String st2=String.valueOf(stutil.get(android.icu.util.Calendar.YEAR))+String.valueOf(stutil.get(android.icu.util.Calendar.MONTH))+String.valueOf(stutil.get(android.icu.util.Calendar.DATE));
+//                    Toast.makeText(getContext(), st+" "+st2, Toast.LENGTH_SHORT).show();
+//                    Log.e("123",String.valueOf(ddlutil.get(android.icu.util.Calendar.YEAR))+String.valueOf(ddlutil.get(android.icu.util.Calendar.MONTH))+String.valueOf(ddlutil.get(android.icu.util.Calendar.DATE)));
+//                    Log.e("123",String.valueOf(stutil.get(android.icu.util.Calendar.YEAR))+String.valueOf(stutil.get(android.icu.util.Calendar.MONTH))+String.valueOf(stutil.get(android.icu.util.Calendar.DATE)));
+                    while(stutil.before(ddlutil)){
+                        String key="";
+                        key=transToKey(stutil);
+                        Log.e("123",key);
+                        c=map.get(key);
+                        if(c==null){
+                            c=getSchemeCalendar(stutil.get(android.icu.util.Calendar.YEAR),stutil.get(android.icu.util.Calendar.MONTH)+1,stutil.get(android.icu.util.Calendar.DATE),color,"D");
+//                            Log.e("123",c.toString());
+                            map.put(c.toString(),c);
+                        }else{
+                            c.addScheme(color, "D");
+                        }
+                        stutil.add(5,1);
+                    }
+                    c=map.get(transToKey(ddlutil));
+                    if(c==null){
+                        c=getSchemeCalendar(Integer.valueOf(strtrs[0]), Integer.valueOf(strtrs[1]), Integer.valueOf(strtrs[2]), color, "E");
+                        map.put(c.toString(),c);
+                    }else{
+                        c.addScheme(color, "E");
+                    }
+                }
 
 
             }
+            TaskBlock tb=new TaskBlock();
+            tb.setSttime(sttime);
+            tb.setDDL(ddl);
+            tb.setTN(name);
+            tb.setId(id);
+            tb.setColor(color);
+            TaskList.add(tb);
         }
 
-        //28560 数据量增长不会影响UI响应速度，请使用这个API替换
         mCalendarView.setSchemeDate(map);
 
         //可自行测试性能差距
@@ -246,18 +325,21 @@ c.addScheme(0xFFe69138, "游");
         mTextYear.setText(String.valueOf(calendar.getYear()));
         mTextLunar.setText(calendar.getLunar());
         mYear = calendar.getYear();
+        daySelectd=mYear+"-"+calendar.getMonth() +"-"+ calendar.getDay();
         if (isClick) {
-            Toast.makeText(getContext(), getCalendarText(calendar), Toast.LENGTH_SHORT).show();
+            taskClassify(mYear+"-"+calendar.getMonth() +"-"+ calendar.getDay());
+//            Toast.makeText(getContext(), getCalendarText(calendar), Toast.LENGTH_SHORT).show();
         }
 //        Log.e("lunar "," --  " + calendar.getLunarCalendar().toString() + "\n" +
 //        "  --  " + calendar.getLunarCalendar().getYear());
-        Log.e("onDateSelected", "  -- " + calendar.getYear() +
-                "  --  " + calendar.getMonth() +
-                "  -- " + calendar.getDay() +
-                "  --  " + isClick + "  --   " + calendar.getScheme());
-        Log.e("onDateSelected", "  " + mCalendarView.getSelectedCalendar().getScheme() +
-                "  --  " + mCalendarView.getSelectedCalendar().isCurrentDay());
-        Log.e("干支年纪 ： ", " -- " + TrunkBranchAnnals.getTrunkBranchYear(calendar.getLunarCalendar().getYear()));
+
+//        Log.e("onDateSelected", "  -- " + calendar.getYear() +
+//                "  --  " + calendar.getMonth() +
+//                "  -- " + calendar.getDay() +
+//                "  --  " + isClick + "  --   " + calendar.getScheme());
+//        Log.e("onDateSelected", "  " + mCalendarView.getSelectedCalendar().getScheme() +
+//                "  --  " + mCalendarView.getSelectedCalendar().isCurrentDay());
+//        Log.e("干支年纪 ： ", " -- " + TrunkBranchAnnals.getTrunkBranchYear(calendar.getLunarCalendar().getYear()));
     }
     private static String getCalendarText(Calendar calendar) {
         return String.format("新历%s \n 农历%s \n 公历节日：%s \n 农历节日：%s \n 节气：%s \n 是否闰月：%s",
@@ -283,9 +365,40 @@ c.addScheme(0xFFe69138, "游");
     }
     @Override
     public void onClick(View view) {
-        Toast.makeText(getContext(), "click", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getContext(), "click", Toast.LENGTH_SHORT).show();
     }
+    public void taskClassify(String date){
+//        Toast.makeText(getContext(), date, Toast.LENGTH_SHORT).show();
+        inSchList.clear();
+        String strs[]=date.split("-");
+        for(int i = 0;i < TaskList.size(); i ++){
+//            Toast.makeText(getContext(), String.valueOf(i), Toast.LENGTH_SHORT).show();
+            TaskBlock tb=TaskList.get(i);
+            String ddl= tb.getDDL();
+            String st=tb.getSttime();
+            if(!ddl.isEmpty()&&!st.isEmpty()){
+                String ddl1[]=ddl.split(" ");
+                String ddls[]=ddl1[0].split("-");
+                String sts[]=st.split("-");
+                android.icu.util.Calendar today= android.icu.util.Calendar.getInstance(); android.icu.util.Calendar stc= android.icu.util.Calendar.getInstance();
+                today.set(Integer.valueOf(strs[0]),Integer.valueOf(strs[1])-1,Integer.valueOf(strs[2]),0,0);
+                stc.set(Integer.valueOf(sts[0]),Integer.valueOf(sts[1])-1,Integer.valueOf(sts[2]),0,0);
+                android.icu.util.Calendar ddlc= android.icu.util.Calendar.getInstance();
+                ddlc.set(Integer.valueOf(ddls[0]),Integer.valueOf(ddls[1])-1,Integer.valueOf(ddls[2]),0,0);
 
+                if(!today.after(ddlc)&&!today.before(stc)){
+                    Toast.makeText(getContext(),date+ddl+st, Toast.LENGTH_SHORT).show();
+
+                    inSchList.add(tb);
+                }else if(!today.before(ddlc)&&!today.after(stc)){
+//                    inSchList.add(tb);
+                }
+            }
+        }
+        inschAdapter.notifyDataSetChanged();
+
+
+    }
     @Override
     public boolean onCalendarIntercept(Calendar calendar) {
         return false;
@@ -329,5 +442,96 @@ c.addScheme(0xFFe69138, "游");
     @Override
     public void onYearViewChange(boolean isClose) {
 
+    }
+    public void refreshData(){
+        initData();
+        taskClassify(daySelectd);
+
+    }
+    public class inSchAdapter extends RecyclerView.Adapter<inSchViewHolder> {
+        //        private BlockClickListener BlockClickListener = null;
+        @NonNull
+        @Override
+        public inSchViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View viewt = LayoutInflater.from(getContext()).inflate(R.layout.module_task_introduce, parent, false);
+
+                return new inSchViewHolder(viewt);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull inSchViewHolder holder, int position) {
+
+
+            TaskBlock tb = inSchList.get(position);
+            MyProgressBar dot=holder.itemView.findViewById(R.id.task_intro_color);
+            dot.setColor(tb.getColor());
+            Date date;
+            if (tb.getDDL().isEmpty()) {
+                holder.daysRemain.setText("余 -");
+            } else {
+                try {
+                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+                    date = df.parse(tb.getDDL());
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            holder.taskName.setText(tb.getTN());
+
+            holder.DDL.setText(tb.getDDL().isEmpty() ? "-" : tb.getDDL());
+//                ((TBlockViewHolder) holder).textView3.setText(String.valueOf(TaskBlockList.size()));
+            holder.itemView.setOnClickListener(view -> {
+                int pos = holder.getAbsoluteAdapterPosition();
+                ((MainActivity)getActivity()).vpMain.setCurrentItem(1, true);
+                ((TaskFragment)(((MainActivity)getActivity()).getFragmentList().get(1))).jump(inSchList.get(pos).getId());
+            });
+            holder.itemView.setOnLongClickListener(view -> {
+                int pos = holder.getAbsoluteAdapterPosition();
+                Vibrator v = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
+                v.vibrate(30);
+                return true;
+            });
+        }
+
+
+        @Override
+        public int getItemCount() {
+            return  inSchList.size();
+        }
+
+    }
+    public static class inSchViewHolder extends RecyclerView.ViewHolder {
+        TextView taskName;
+        TextView daysRemain;
+        TextView textView3;
+        TextView DDL;
+        ConstraintLayout constraintLayout;
+
+        public inSchViewHolder(@NonNull View itemView) {
+            super(itemView);
+            taskName = itemView.findViewById(R.id.task_block_name);
+            daysRemain = itemView.findViewById(R.id.task_block_days_remain);
+            DDL = itemView.findViewById(R.id.task_block_ddl);
+            constraintLayout = itemView.findViewById(R.id.task_block);
+        }
+    }
+    public String transToKey( android.icu.util.Calendar util){
+        String key="";
+        if(util.get(android.icu.util.Calendar.MONTH)+1<10){
+            if(util.get(android.icu.util.Calendar.DATE)<10){
+                key=String.valueOf(util.get(android.icu.util.Calendar.YEAR))+"0"+String.valueOf(util.get(android.icu.util.Calendar.MONTH)+1)+"0"+String.valueOf(util.get(android.icu.util.Calendar.DATE));
+            }else{
+                key=String.valueOf(util.get(android.icu.util.Calendar.YEAR))+"0"+String.valueOf(util.get(android.icu.util.Calendar.MONTH)+1)+String.valueOf(util.get(android.icu.util.Calendar.DATE));
+            }
+        }else{
+            if(util.get(android.icu.util.Calendar.DATE)<10){
+                key=String.valueOf(util.get(android.icu.util.Calendar.YEAR))+String.valueOf(util.get(android.icu.util.Calendar.MONTH)+1)+"0"+String.valueOf(util.get(android.icu.util.Calendar.DATE));
+            }else{
+                key=String.valueOf(util.get(android.icu.util.Calendar.YEAR))+String.valueOf(util.get(android.icu.util.Calendar.MONTH)+1)+String.valueOf(util.get(android.icu.util.Calendar.DATE));
+            }
+        }
+        return key;
     }
 }

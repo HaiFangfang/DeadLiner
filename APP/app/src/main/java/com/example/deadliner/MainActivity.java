@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private final int[] menuLogos = {R.drawable.one, R.drawable.one, R.drawable.one};
 
     private List<Fragment> fragmentList;
-    private ViewPager2 vpMain;
+    public ViewPager2 vpMain;
     private TabLayout tlMain;
 
     private static MyDBhelper dbHelper;
@@ -60,8 +60,8 @@ public class MainActivity extends AppCompatActivity {
         };
 
         vpMain.setAdapter(adapter); // 给ViewPager2设置适配器
-
-        new TabLayoutMediator(tlMain, vpMain, false, false, (tab, position) -> { // TabLayout和ViewPager2关联到一起
+        vpMain.setOffscreenPageLimit(2);
+        new TabLayoutMediator(tlMain, vpMain, false, true, (tab, position) -> { // TabLayout和ViewPager2关联到一起
 
             tab.setCustomView(tabMenu(menuLogos[position], menus[position])); // 设置Tab的图标和标题
         }).attach(); // 调用该方法才能真正绑定起来

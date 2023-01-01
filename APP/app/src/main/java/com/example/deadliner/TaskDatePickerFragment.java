@@ -91,7 +91,20 @@ public class TaskDatePickerFragment extends BottomSheetDialogFragment {
             int ms=dp_start.getMonth()+1;
             int ds=dp_start.getDayOfMonth();
             String DDL=y+"-"+m+"-"+d;
-            String Time=h+":"+M;
+            String Time;
+            if(h<10){
+                if(M<10){
+                    Time="0"+h+":"+"0"+M;
+                }else{
+                    Time="0"+h+":"+M;
+                }
+            }else{
+                if(M<10){
+                    Time=h+":"+"0"+M;
+                }else{
+                    Time=h+":"+M;
+                }
+            }
             String ST=ys+"-"+ms+"-"+ds;
             Toast.makeText(getContext(), DDL, Toast.LENGTH_SHORT).show();
             ((TaskFragment)(((MainActivity)getActivity()).getFragmentList().get(1))).page.refreshTimes(DDL,Time,ST);

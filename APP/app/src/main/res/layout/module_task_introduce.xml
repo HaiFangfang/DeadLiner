@@ -4,18 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/task_block"
     android:layout_width="match_parent"
-    android:background="@drawable/taskblock"
-    android:layout_height="150dp"
+    android:background="@drawable/taskintro"
+    android:layout_height="100dp"
     android:orientation="vertical"
     tools:context=".TaskBlock">
 
     <!-- TODO: try update text -->
 
+    <com.example.deadliner.MyProgressBar
+        android:id="@+id/task_intro_color"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/task_block_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
+        android:layout_marginStart="64dp"
         android:layout_marginTop="16dp"
         android:text="TextView"
         android:textColor="@color/black"
@@ -43,35 +52,4 @@
         android:text="TextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/task_block_name" />
-    <TextView
-        android:id="@+id/task_block_proc_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="21dp"
-        android:text="TextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/task_block_ddl" />
-    <TextView
-        android:id="@+id/task_block_next_proc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="21dp"
-        android:textColor="@color/white"
-        android:text="TextView"
-        android:background="@drawable/bar_alarm"
-        app:layout_constraintLeft_toRightOf="@id/task_block_proc_count"
-        app:layout_constraintTop_toBottomOf="@+id/task_block_ddl"
-        app:layout_constraintRight_toRightOf="parent"/>
-    <com.example.deadliner.LeanTextView
-        android:id="@+id/task_block_closed"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:textSize="28dp"
-        android:background="@drawable/taskblockclosed"
-        android:textColor="@color/trans_white_heavy"
-        android:visibility="invisible"
-        android:text="已完成"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.icu.text.DateFormat;
+import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
@@ -26,6 +28,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -42,7 +45,6 @@ public class TaskFragment extends Fragment {
     String cataSelectedID;
     MyDBhelper db;
     public TaskInfo page;
-    private boolean mHandledPress;
 
 
 
@@ -106,19 +108,35 @@ public class TaskFragment extends Fragment {
         Cursor cursor = db.getWritableDatabase().rawQuery(sql, null);
         cursor.moveToFirst();
         String count = cursor.getString(0);
+        String sql0 = "select count(*) from task where status=1";
+        Cursor cursor0 = db.getWritableDatabase().rawQuery(sql0, null);
+        cursor0.moveToFirst();
+        String count0 = cursor0.getString(0);
 
         TaskCata tc = new TaskCata();
         tc.setId("");
         tc.setCataName("所有任务");
 //        tc.setOpenNum(Integer.parseInt(cata_c.getString(2)));
         tc.setTaskNum(Integer.parseInt(count));
+        tc.setOpenNum(Integer.parseInt(count0));
         TaskCataList.add(tc);
         while(cata_c.moveToNext()){
+
             tc = new TaskCata();
             tc.setId(cata_c.getString(0));
             tc.setCataName(cata_c.getString(1));
             tc.setOpenNum(Integer.parseInt(cata_c.getString(2)));
             tc.setTaskNum(Integer.parseInt(cata_c.getString(3)));
+            String sql1 = "select count(*) from task where cata="+tc.getId();
+            Cursor cursor1 = db.getWritableDatabase().rawQuery(sql1, null);
+            cursor1.moveToFirst();
+            String count1 = cursor1.getString(0);
+            tc.setTaskNum(Integer.parseInt(count1));
+            String sql2 = "select count(*) from task where cata="+tc.getId()+" and status=1";
+            Cursor cursor2 = db.getWritableDatabase().rawQuery(sql2, null);
+            cursor2.moveToFirst();
+            String count2 = cursor2.getString(0);
+            tc.setOpenNum(Integer.parseInt(count2));
             TaskCataList.add(tc);
 //            Toast.makeText(getContext(), cata_c.getString(0)+cata_c.getString(1)+cata_c.getString(2), Toast.LENGTH_SHORT).show();
         }
@@ -136,11 +154,21 @@ public class TaskFragment extends Fragment {
 
         TaskBlockList.clear();
         while(cata_tasks.moveToNext()){
+
             TaskBlock tb=new TaskBlock();
             tb.setId(cata_tasks.getString(0));
             tb.setTN(cata_tasks.getString(1));
-            tb.setDDL(cata_tasks.getString(2));
+            tb.setSttime(cata_tasks.getString(2));
+            tb.setDDL(cata_tasks.getString(3));
+            tb.setNext(getNextProc(tb.getId()));
+            if(cata_tasks.getInt(4)==0){
+                tb.setOpen(false);
+            }else{
+                tb.setOpen(true);
+            }
+            tb.setColor(cata_tasks.getInt(5));
             TaskBlockList.add(tb);
+//            Toast.makeText(getContext(), cata_tasks.getString(0)+cata_tasks.getString(1)+cata_tasks.getString(2), Toast.LENGTH_SHORT).show();
         }
         Comparator comp = new TaskComparator();
         Collections.sort(TaskBlockList,comp);
@@ -228,10 +256,27 @@ public class TaskFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             if (holder instanceof TBlockViewHolder) {
+
                 TaskBlock tb = TaskBlockList.get(position);
+                Date date;
+                if (tb.getDDL().isEmpty()){
+                    ((TBlockViewHolder) holder).daysRemain.setText("余 -");
+                }else{
+                    try{
+                        DateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+                        date=df.parse(tb.getDDL());
+                        ((TBlockViewHolder) holder).daysRemain.setText(ShowTimeInterval(date));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 ((TBlockViewHolder) holder).taskName.setText(tb.getTN());
-                ((TBlockViewHolder) holder).daysRemain.setText("剩余"+tb.getDDL()+"天");
-                ((TBlockViewHolder) holder).DDL.setText(tb.getDDL());
+                ((TBlockViewHolder) holder).next.setText(tb.getNext());
+                if(!tb.isOpen()){
+                    ((TBlockViewHolder) holder).closed.setVisibility(View.VISIBLE);
+                }
+                ((TBlockViewHolder) holder).DDL.setText(tb.getDDL().isEmpty()?"-":tb.getDDL());
 //                ((TBlockViewHolder) holder).textView3.setText(String.valueOf(TaskBlockList.size()));
                 holder.itemView.setOnClickListener(view-> {
                     int pos = holder.getAbsoluteAdapterPosition();
@@ -268,7 +313,9 @@ public class TaskFragment extends Fragment {
 
         public void jump(String id) {
             FragmentManager fm = getParentFragmentManager();
+            if(page!=null){fm.popBackStack();}
             page=new TaskInfo(id,cataSelectedID);
+
             fm.beginTransaction()
                     .addToBackStack(null) // 将当前fragment加入到返回栈中
                     .replace(R.id.tasks, page).commit();
@@ -375,7 +422,9 @@ public class TaskFragment extends Fragment {
         block_comp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openNamingPop(id);
+                ContentValues c=new ContentValues();
+                c.put("status",0);
+                db.getWritableDatabase().update("task",c,"id=?",new String[]{id});
                 popWindow.dismiss();
             }
         });
@@ -384,16 +433,21 @@ public class TaskFragment extends Fragment {
     public static class TBlockViewHolder extends RecyclerView.ViewHolder {
         TextView taskName;
         TextView daysRemain;
-        TextView textView3;
+        TextView closed;
         TextView DDL;
         ConstraintLayout constraintLayout;
+        TextView next;
+        TextView prog;
 
         public TBlockViewHolder(@NonNull View itemView) {
             super(itemView);
+            next=itemView.findViewById(R.id.task_block_next_proc);
+            prog=itemView.findViewById(R.id.task_block_proc_count);
             taskName = itemView.findViewById(R.id.task_block_name);
             daysRemain = itemView.findViewById(R.id.task_block_days_remain);
             DDL = itemView.findViewById(R.id.task_block_ddl);
             constraintLayout = itemView.findViewById(R.id.task_block);
+            closed=itemView.findViewById(R.id.task_block_closed);
         }
     }
 
@@ -427,7 +481,7 @@ public class TaskFragment extends Fragment {
             if (holder instanceof CataViewHolder) {
                 TaskCata tc = TaskCataList.get(position);
                 ((CataViewHolder) holder).tv.setText(tc.getCataName());
-                ((CataViewHolder) holder).num.setText(String.valueOf(tc.getTaskNum()));
+                ((CataViewHolder) holder).num.setText(String.valueOf(tc.getOpenNum())+"/"+String.valueOf(tc.getTaskNum()));
                 holder.itemView.setOnLongClickListener(view->{
                     Vibrator v=(Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
                     v.vibrate(30);
@@ -485,13 +539,13 @@ public class TaskFragment extends Fragment {
         public int compare(Object lhs, Object rhs) {
             TaskBlock a = (TaskBlock) lhs;
             TaskBlock b = (TaskBlock) rhs;
-            if(a.getDDL()==null){
+            if(a.getDDL().isEmpty()){
                 return 1;
             }
-            if(b.getDDL()==null){
+            if(b.getDDL().isEmpty()){
                 return -1;
             }
-            return (Integer.parseInt(a.getDDL()) - Integer.parseInt(b.getDDL()));
+            return (a.getDDL().compareTo(b.getDDL()));
         }
 
     }
@@ -503,6 +557,18 @@ public class TaskFragment extends Fragment {
         long hour = diff / (60 * 60 * 1000) - day * 24;
         long min = diff / (60 * 1000) - day * 24 * 60 - hour * 60;
         long sec = diff / 1000 - day * 24 * 60 * 60 - hour * 60 * 60 - min * 60;
-        return String.valueOf(day)+" "+String.valueOf(hour)+" "+String.valueOf(min);
+        if(day<0||hour<0||min<0||sec<0){
+            return "超时 "+String.valueOf(-day)+"D "+String.valueOf(-hour)+"H";
+        }
+        return "余 "+String.valueOf(day)+"D "+String.valueOf(hour)+"H";
+    }
+    public String getNextProc(String id){
+        Cursor c=MainActivity.getdb().getWritableDatabase().query("progress",null,"task=?",new String[]{id},null,null,"seq");
+        while (c.moveToNext()){
+            if(c.getInt(2)==0){
+                return "NEXT "+c.getString(1);
+            }
+        }
+        return "NO NEXT";
     }
 }
