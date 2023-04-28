@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +36,6 @@ public class TaskCataNamingFragment extends BottomSheetDialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         id=getArguments().getString("id");
-        Toast.makeText(getContext(), id, Toast.LENGTH_SHORT).show();
 
         if (getContext() == null) {
             return super.onCreateDialog(savedInstanceState);
@@ -48,7 +48,7 @@ public class TaskCataNamingFragment extends BottomSheetDialogFragment {
         View dialogView = inflater.inflate(R.layout.fragment_cata_naming, container, false);
 
         newName=dialogView.findViewById(R.id.cata_name_edit);
-        Button conf=dialogView.findViewById(R.id.cata_name_confirm);
+        ImageView conf=dialogView.findViewById(R.id.cata_name_confirm);
         if(!id.isEmpty()){
             dialogView.findViewById(R.id.cata_name_title_new).setVisibility(View.INVISIBLE);
             dialogView.findViewById(R.id.cata_name_title_edit).setVisibility(View.VISIBLE);

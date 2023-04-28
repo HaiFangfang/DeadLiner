@@ -9,15 +9,15 @@
     android:orientation="horizontal"
     android:paddingBottom="0dp"
     android:paddingTop="0dp"
-    android:textColor="#eeeeee"
+    android:textColor="@color/gray_blue_dark"
     tools:ignore="HardcodedText">
 
     <TextView
-        android:layout_marginStart="10dp"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
+        android:textColor="@color/gray_blue_dark"
         android:text="@string/sun"
         android:textSize="12sp" />
 
@@ -26,6 +26,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
+        android:textColor="@color/gray_blue_dark"
         android:text="@string/mon"
         android:textSize="12sp" />
 
@@ -34,6 +35,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
+        android:textColor="@color/gray_blue_dark"
         android:text="@string/tue"
         android:textSize="12sp" />
 
@@ -42,6 +44,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
+        android:textColor="@color/gray_blue_dark"
         android:text="@string/wed"
         android:textSize="12sp" />
 
@@ -50,6 +53,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
+        android:textColor="@color/gray_blue_dark"
         android:text="@string/thu"
         android:textSize="12sp" />
 
@@ -58,14 +62,15 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
+        android:textColor="@color/gray_blue_dark"
         android:text="@string/fri"
         android:textSize="12sp" />
 
     <TextView
-        android:layout_marginEnd="10dp"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
+        android:textColor="@color/gray_blue_dark"
         android:gravity="center"
         android:text="@string/sat"
         android:textSize="12sp" />

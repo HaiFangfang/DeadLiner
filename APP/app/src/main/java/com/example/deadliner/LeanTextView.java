@@ -44,7 +44,7 @@ public class LeanTextView extends androidx.appcompat.widget.AppCompatTextView {
         canvas.save();
         canvas.translate(getCompoundPaddingLeft(), getExtendedPaddingTop());
         canvas.rotate(-20, this.getWidth() / 2f, this.getHeight() / 2f);
-        canvas.translate(-10,-100);
+        canvas.translate(-10,-150);
 
 
 //        String mText="已完成";

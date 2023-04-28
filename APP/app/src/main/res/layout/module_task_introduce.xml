@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/task_block"
     android:layout_width="match_parent"
+    android:layout_height="90dp"
     android:background="@drawable/taskintro"
-    android:layout_height="100dp"
     android:orientation="vertical"
     tools:context=".TaskBlock">
 
@@ -16,7 +16,7 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_marginStart="28dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="18dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,31 +25,74 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="64dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
+        android:textStyle="bold"
         android:text="TextView"
-        android:textColor="@color/black"
+        android:textColor="@color/gray_blue_dark"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/task_block_sted"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="52dp"
+        android:layout_marginRight="20dp"
+        android:text="TextView"
+        android:textStyle="bold"
+        android:textColor="@color/gray_blue_dark"
+        app:layout_constraintBaseline_toBaselineOf="@id/task_block_name"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/st_hinter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:shadowColor="@color/light_blue"
+        android:layout_marginStart="160dp"
+        android:shadowRadius="10"
+        android:text="STARTED"
+        android:textColor="@color/white"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@id/task_block_sted"
+        app:layout_constraintBottom_toBottomOf="@+id/task_block_sted"
+        app:layout_constraintStart_toStartOf="@+id/task_intro_color" />
+
+    <TextView
+        android:id="@+id/rm_hinter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:shadowColor="@color/light_blue"
+        android:shadowRadius="10"
+        android:text="REMAINS"
+        android:textColor="@color/white"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@+id/task_block_days_remain"
+        app:layout_constraintStart_toStartOf="@+id/st_hinter" />
+
+    <TextView
         android:id="@+id/task_block_days_remain"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
-        android:layout_marginTop="20dp"
         android:text="TextView"
-       app:layout_constraintBaseline_toBaselineOf="@id/task_block_name"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
+        android:textColor="@color/gray_blue_dark"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/task_block_sted"
+        app:layout_constraintTop_toBottomOf="@+id/task_block_sted" />
 
     <TextView
         android:id="@+id/task_block_ddl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
-        android:layout_marginTop="21dp"
+        android:layout_marginTop="15dp"
         android:text="TextView"
+        android:textColor="@color/gray_blue_dark"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/task_block_name" />
 </androidx.constraintlayout.widget.ConstraintLayout>

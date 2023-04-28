@@ -25,7 +25,7 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:paddingStart="16dp"
-            android:textColor="#000000"
+            android:textColor="@color/gray_blue_dark"
             android:textSize="26sp"
             android:textStyle="bold"
             tools:ignore="RtlSymmetry" />
@@ -47,7 +47,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textColor="#000000"
+                android:textColor="@color/gray_blue_dark"
                 android:textSize="10dp"
                 android:visibility="gone"/>
 
@@ -57,7 +57,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textColor="#000000"
+                android:textColor="@color/gray_blue_dark"
                 android:textSize="10sp"
                 tools:ignore="SmallSp" />
         </LinearLayout>
@@ -135,6 +135,7 @@
             android:background="@drawable/calendar_drawable"
             app:calendar_padding_left="0dp"
             app:calendar_padding_right="0dp"
+            android:paddingBottom="5dp"
             app:current_day_lunar_text_color="#ff0000"
             app:current_day_text_color="#ff0000"
             app:current_month_lunar_text_color="#CFCFCF"
@@ -185,7 +186,10 @@
         android:layout_height="40dp"
         android:gravity="center_vertical"
         android:paddingStart="20dp"
-        android:textSize="16dp"
+        android:textSize="18dp"
+        android:textColor="@color/white"
+        android:shadowColor="@color/light_blue_200"
+        android:shadowRadius="10"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/calendarLayout"
         app:layout_constraintLeft_toLeftOf="parent"

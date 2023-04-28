@@ -21,8 +21,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private final String[] menus = {"日程", "任务", "统计"};
-    private final int[] menuLogos = {R.drawable.one, R.drawable.one, R.drawable.one};
-
+    private final int[] menuLogos = {R.drawable.me_drawable, R.drawable.tasks_drawable, R.drawable.stat_drawable};
     private List<Fragment> fragmentList;
     public ViewPager2 vpMain;
     private TabLayout tlMain;

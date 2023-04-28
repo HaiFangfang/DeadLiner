@@ -2,14 +2,18 @@ package com.example.deadliner;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.icu.text.DateFormat;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -35,7 +39,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-public class TaskFragment extends Fragment {
+public class TaskFragment extends Fragment{
     List<TaskBlock> TaskBlockList = new ArrayList<>();
     List<TaskCata> TaskCataList = new ArrayList<>();
     RecyclerView taskBlocks;
@@ -45,6 +49,7 @@ public class TaskFragment extends Fragment {
     String cataSelectedID;
     MyDBhelper db;
     public TaskInfo page;
+
 
 
 
@@ -103,16 +108,16 @@ public class TaskFragment extends Fragment {
         //可以启动网络加载或绘图工作了。
     }
     public void refreshTaskCata(){
+        TaskCataList.clear();
         Cursor cata_c = db.getWritableDatabase().query("cata",null,null,null,null,null,null);
         String sql = "select count(*) from task";
         Cursor cursor = db.getWritableDatabase().rawQuery(sql, null);
         cursor.moveToFirst();
         String count = cursor.getString(0);
-        String sql0 = "select count(*) from task where status=1";
+        String sql0 = "select count(*) from task where status=0";
         Cursor cursor0 = db.getWritableDatabase().rawQuery(sql0, null);
         cursor0.moveToFirst();
         String count0 = cursor0.getString(0);
-
         TaskCata tc = new TaskCata();
         tc.setId("");
         tc.setCataName("所有任务");
@@ -120,6 +125,7 @@ public class TaskFragment extends Fragment {
         tc.setTaskNum(Integer.parseInt(count));
         tc.setOpenNum(Integer.parseInt(count0));
         TaskCataList.add(tc);
+//        Toast.makeText(getContext(), cata_c.getString(1), Toast.LENGTH_SHORT).show();
         while(cata_c.moveToNext()){
 
             tc = new TaskCata();
@@ -132,7 +138,7 @@ public class TaskFragment extends Fragment {
             cursor1.moveToFirst();
             String count1 = cursor1.getString(0);
             tc.setTaskNum(Integer.parseInt(count1));
-            String sql2 = "select count(*) from task where cata="+tc.getId()+" and status=1";
+            String sql2 = "select count(*) from task where cata="+tc.getId()+" and status=0";
             Cursor cursor2 = db.getWritableDatabase().rawQuery(sql2, null);
             cursor2.moveToFirst();
             String count2 = cursor2.getString(0);
@@ -161,6 +167,7 @@ public class TaskFragment extends Fragment {
             tb.setSttime(cata_tasks.getString(2));
             tb.setDDL(cata_tasks.getString(3));
             tb.setNext(getNextProc(tb.getId()));
+            tb.setCount(getProcCount(tb.getId()));
             if(cata_tasks.getInt(4)==0){
                 tb.setOpen(false);
             }else{
@@ -178,7 +185,7 @@ public class TaskFragment extends Fragment {
         try{
             db.getWritableDatabase().execSQL("insert into cata(name) values (?)", new Object[] { name});
         }catch (Exception e){
-            Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
         }
         String sql="select last_insert_rowid() from task";
         Cursor c=db.getWritableDatabase().rawQuery(sql, null);
@@ -193,14 +200,17 @@ public class TaskFragment extends Fragment {
         try{
             db.getWritableDatabase().update("cata",c,"id=?",new String[]{id});
         }catch (Exception e){
-            Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
         }
     }
-    public void refreshTaskCata(String name,String id) {Toast.makeText(getContext(), "freahed"+name, Toast.LENGTH_SHORT).show();
+    public void refreshTaskCata(String name,String id) {
         if(id.isEmpty()){
-           addCata(name);
+            cataSelectedID=addCata(name);
+            refreshTaskCata();
+            refreshTaskBlock();
         }else{
             renameCata(name,id);
+            refreshTaskCata();
         }
 
     }
@@ -225,6 +235,18 @@ public class TaskFragment extends Fragment {
         return tbs;
     }
     private RecyclerView.ItemDecoration getBlockDecoration() {
+        return new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                outRect.top = 15;
+                outRect.bottom=5;
+                outRect.left=20;
+                outRect.right=25;
+
+            }
+        };
+    }
+    private RecyclerView.ItemDecoration getCataDecoration() {
         return new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
@@ -273,8 +295,18 @@ public class TaskFragment extends Fragment {
 
                 ((TBlockViewHolder) holder).taskName.setText(tb.getTN());
                 ((TBlockViewHolder) holder).next.setText(tb.getNext());
+                GradientDrawable gd=new GradientDrawable();
+                gd.setShape(GradientDrawable.RECTANGLE);
+                gd.setCornerRadius(10);
+                gd.setColor(tb.getColor()-0x11000000);
+//                ((TBlockViewHolder) holder).next.setTextColor(0xffffffff-tb.getColor()+0xff707070);
+                gd.setStroke(5,0xffffffff);
+                ((TBlockViewHolder) holder).next.setBackground(gd);
+                ((TBlockViewHolder) holder).prog.setText(tb.getCount());
                 if(!tb.isOpen()){
                     ((TBlockViewHolder) holder).closed.setVisibility(View.VISIBLE);
+                }else{
+                    ((TBlockViewHolder) holder).closed.setVisibility(View.INVISIBLE);
                 }
                 ((TBlockViewHolder) holder).DDL.setText(tb.getDDL().isEmpty()?"-":tb.getDDL());
 //                ((TBlockViewHolder) holder).textView3.setText(String.valueOf(TaskBlockList.size()));
@@ -286,7 +318,7 @@ public class TaskFragment extends Fragment {
                     int pos = holder.getAbsoluteAdapterPosition();
                     Vibrator v=(Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
                     v.vibrate(30);
-                    initBlockPop(view,TaskBlockList.get(pos).getId());
+                    initBlockPop(view,TaskBlockList.get(pos).getId(),TaskBlockList.get(pos).isOpen());
                     return true;
                 });
             } else if (holder instanceof NBlockViewHolder) {
@@ -327,14 +359,49 @@ public class TaskFragment extends Fragment {
             dialog.setArguments(bundle);
             dialog.show(getParentFragmentManager(), "dialog_fragment");
         }
-        private void showDialog(String id) {
-            stdDialog dialog = new stdDialog(getContext(), R.style.mdialog,id);
-            Toast.makeText(getContext(), id, Toast.LENGTH_SHORT).show();
+        private void showDialogT(String id) {
+            stdDialog dialog = new stdDialog(getContext(), R.style.mdialog, id,false, new stdDialog.OncloseListener() {
+                @Override
+                public void onClick(boolean confirm) {
+
+                    MainActivity.getdb().getWritableDatabase().delete("task","id=?",new String[]{id});
+                    MainActivity.getdb().getWritableDatabase().delete("progress","task=?",new String[]{id});
+                    MainActivity.getdb().getWritableDatabase().delete("times","task=?",new String[]{id});
+                    refreshTaskCata();
+                    refreshTaskBlock();
+                    informWidget();
+                }
+            });
+//            Toast.makeText(getContext(), id, Toast.LENGTH_SHORT).show();
             final WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
             params.y=-150;
             dialog.getWindow().setAttributes(params);
             dialog.show();
         }
+    private void showDialogC(String id) {
+        stdDialog dialog = new stdDialog(getContext(), R.style.mdialog, id,true, new stdDialog.OncloseListener() {
+            @Override
+            public void onClick(boolean confirm) {
+
+                MainActivity.getdb().getWritableDatabase().delete("cata","id=?",new String[]{id});
+                Cursor c=MainActivity.getdb().getWritableDatabase().query("task",null,"cata=?",new String[]{id},null,null,null,null);
+                while (c.moveToNext()){
+                    String id=c.getString(0);
+                    MainActivity.getdb().getWritableDatabase().delete("task","id=?",new String[]{id});
+                    MainActivity.getdb().getWritableDatabase().delete("progress","task=?",new String[]{id});
+                    MainActivity.getdb().getWritableDatabase().delete("times","task=?",new String[]{id});
+                }
+                cataSelectedID="";
+                refreshTaskCata();
+                refreshTaskBlock();
+            }
+        });
+//        Toast.makeText(getContext(), id, Toast.LENGTH_SHORT).show();
+        final WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+        params.y=-150;
+        dialog.getWindow().setAttributes(params);
+        dialog.show();
+    }
 
 
     private void initCataPop(View v,String id) {
@@ -344,8 +411,8 @@ public class TaskFragment extends Fragment {
         //1.构造一个PopupWindow，参数依次是加载的View，宽高
         final PopupWindow popWindow = new PopupWindow(view, v.getWidth(), v.getHeight(), true);
 
-        if(id.equals("1")){
-            cata_del.setVisibility(View.INVISIBLE);
+        if(id.isEmpty()){
+            return;
         }
 //        popWindow.setAnimationStyle(R.anim.anim_pop);  //设置加载动画
 
@@ -371,7 +438,7 @@ public class TaskFragment extends Fragment {
         cata_del.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View vi) {
-                showDialog(id);
+                showDialogC(id);
                 popWindow.dismiss();
             }
         });
@@ -383,8 +450,14 @@ public class TaskFragment extends Fragment {
             }
         });
     }
-    private void initBlockPop(View v,String id) {
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.module_task_block_op_pop, null, false);
+    private void initBlockPop(View v,String id,boolean isOpen) {
+        View view;
+        if(isOpen){
+           view = LayoutInflater.from(getContext()).inflate(R.layout.module_task_block_op_pop, null, false);
+        }else{
+            view = LayoutInflater.from(getContext()).inflate(R.layout.module_task_block_op_pop_redo, null, false);
+        }
+
         Button block_del = (Button) view.findViewById(R.id.block_op_del);
         Button block_comp = (Button) view.findViewById(R.id.block_op_comp);
         //1.构造一个PopupWindow，参数依次是加载的View，宽高
@@ -407,29 +480,99 @@ public class TaskFragment extends Fragment {
         });
         popWindow.setBackgroundDrawable(new ColorDrawable(0x00000000));    //要为popWindow设置一个背景才有效
 
-
+        int[] location = new int[2] ;
+        v.getLocationOnScreen(location);//获取在整个屏幕内的绝对坐标
         //设置popupWindow显示的位置，参数依次是参照View，x轴的偏移量，y轴的偏移量
-        popWindow.showAsDropDown(v, 0, -180);
+        popWindow.showAtLocation(v, 0,location[0], location[1]+v.getHeight()/2);
+
+        if(isOpen){
+            block_comp.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ContentValues c=new ContentValues();
+                    c.put("status",0);
+                    db.getWritableDatabase().update("task",c,"id=?",new String[]{id});
+                    popWindow.dismiss();
+                    refreshTaskCata();
+                    refreshTaskBlock();
+                    informWidget();
+                }
+            });
+        }else{
+            block_comp.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ContentValues c=new ContentValues();
+                    c.put("status",1);
+                    db.getWritableDatabase().update("task",c,"id=?",new String[]{id});
+                    popWindow.dismiss();
+                    refreshTaskCata();
+                    refreshTaskBlock();
+                    informWidget();
+                }
+            });
+        }
 
         //设置popupWindow里的按钮的事件
         block_del.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View vi) {
-                showDialog(id);
+                showDialogT(id);
                 popWindow.dismiss();
             }
         });
-        block_comp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ContentValues c=new ContentValues();
-                c.put("status",0);
-                db.getWritableDatabase().update("task",c,"id=?",new String[]{id});
-                popWindow.dismiss();
-            }
-        });
-    }
 
+    }
+    public void informWidget(){
+        ArrayList<TaskBlock> tbs=new ArrayList<>();
+        Cursor c=MainActivity.getdb().getWritableDatabase().query("task",new String[]{"name","ddl"},"status=1 and ddl!=''",null,null,null,null);
+        while (c.moveToNext()){
+            TaskBlock tb=new TaskBlock();
+            tb.setTN(c.getString(0));
+            tb.setDDL(c.getString(1));
+            tbs.add(tb);
+        }
+        Intent i=new Intent("android.appwidget.action.APPWIDGET_UPDATE");
+
+        Comparator comp = new TaskComparatorw();
+        Collections.sort(tbs,comp);
+        if(!tbs.isEmpty()){
+            i.putExtra("name",tbs.get(0).getTN());
+            i.putExtra("ddl",tbs.get(0).getDDL());
+        }else{
+            i.putExtra("name","NO TASK");
+            i.putExtra("ddl","-");
+        }
+
+        getContext().sendBroadcast(i);
+    }
+    private static class TaskComparatorw implements Comparator {
+                @Override
+        public int compare(Object lhs, Object rhs) {
+            TaskBlock a = (TaskBlock) lhs;
+            TaskBlock b = (TaskBlock) rhs;
+            if(a.getDDL().isEmpty()){
+                return 1;
+            }
+            if(b.getDDL().isEmpty()){
+                return -1;
+            }
+            long lDatea=0;
+            long lDateb=0;
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+            try {
+                Date datea=df.parse(a.getDDL());
+                Date dateb=df.parse(b.getDDL());
+                lDatea =  datea.getTime();
+                lDateb =  dateb.getTime();
+            } catch (ParseException e) {
+                e.printStackTrace();
+                Log.e("qwerwfg","qerwgh");
+            }
+            return Long.compare(lDatea,lDateb) ;
+        }
+
+    }
     public static class TBlockViewHolder extends RecyclerView.ViewHolder {
         TextView taskName;
         TextView daysRemain;
@@ -480,6 +623,13 @@ public class TaskFragment extends Fragment {
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             if (holder instanceof CataViewHolder) {
                 TaskCata tc = TaskCataList.get(position);
+                if(tc.getId().equals(cataSelectedID)){
+                    ((CataViewHolder) holder).sel.setVisibility(View.VISIBLE);
+                    ((CataViewHolder) holder).tv.setTypeface (Typeface.defaultFromStyle (Typeface.BOLD));
+                }else{
+                    ((CataViewHolder) holder).sel.setVisibility(View.INVISIBLE);
+                    ((CataViewHolder) holder).tv.setTypeface(Typeface.defaultFromStyle (Typeface.NORMAL));
+                }
                 ((CataViewHolder) holder).tv.setText(tc.getCataName());
                 ((CataViewHolder) holder).num.setText(String.valueOf(tc.getOpenNum())+"/"+String.valueOf(tc.getTaskNum()));
                 holder.itemView.setOnLongClickListener(view->{
@@ -492,6 +642,7 @@ public class TaskFragment extends Fragment {
                 holder.itemView.setOnClickListener(view -> {
                     int pos = holder.getAbsoluteAdapterPosition();
                     cataSelectedID=TaskCataList.get(pos).getId();
+                    refreshTaskCata();
                     refreshTaskBlock();
                 });
             }
@@ -514,23 +665,18 @@ public class TaskFragment extends Fragment {
     public static class CataViewHolder extends RecyclerView.ViewHolder {
         TextView tv;
         TextView num;
-
+        TextView sel;
         public CataViewHolder(@NonNull View itemView) {
             super(itemView);
+            sel=itemView.findViewById(R.id.sel);
             tv = itemView.findViewById(R.id.textview);
             num = itemView.findViewById(R.id.num);
         }
     }
 
     public static class NCataViewHolder extends RecyclerView.ViewHolder {
-//        TextView tv;
-//        TextView num;
-          TextView newcata;
         public NCataViewHolder(@NonNull View itemView) {
             super(itemView);
-//            tv = itemView.findViewById(R.id.textview);
-//            num = itemView.findViewById(R.id.num);
-            newcata=itemView.findViewById(R.id.newcata)
 ;        }
     }
 
@@ -539,6 +685,11 @@ public class TaskFragment extends Fragment {
         public int compare(Object lhs, Object rhs) {
             TaskBlock a = (TaskBlock) lhs;
             TaskBlock b = (TaskBlock) rhs;
+            if(a.isOpen()==false&&b.isOpen()==true){
+                return 1;
+            }else if(b.isOpen()==false&&a.isOpen()==true){
+                return -1;
+            }
             if(a.getDDL().isEmpty()){
                 return 1;
             }
@@ -565,10 +716,21 @@ public class TaskFragment extends Fragment {
     public String getNextProc(String id){
         Cursor c=MainActivity.getdb().getWritableDatabase().query("progress",null,"task=?",new String[]{id},null,null,"seq");
         while (c.moveToNext()){
-            if(c.getInt(2)==0){
-                return "NEXT "+c.getString(1);
+            if(c.getInt(3)==0){
+                return c.getString(1);
             }
         }
         return "NO NEXT";
     }
+    public String getProcCount(String id){
+        String sql0 = "select count(*) from progress where task="+id;
+        String sql1 = "select count(*) from progress where status=1 and task="+id;
+        Cursor all = MainActivity.getdb().getWritableDatabase().rawQuery(sql0, null);
+        Cursor finished=MainActivity.getdb().getWritableDatabase().rawQuery(sql1, null);
+        all.moveToFirst();
+        finished.moveToFirst();
+        return "进度 "+finished.getString(0)+"/"+all.getString(0);
+
+    }
+
 }

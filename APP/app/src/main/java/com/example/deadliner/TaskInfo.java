@@ -6,6 +6,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.drawable.GradientDrawable;
 import android.icu.text.DateFormat;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
@@ -31,6 +33,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,6 +62,11 @@ public class TaskInfo extends Fragment {
     private TextView ST;
     private TextView TR;
     private Button add_pro;
+    TextView prog_bg;
+    TextView prog;
+    TextView prog_tr;
+    private TextView color_change;
+    int color;
     MyDBhelper db;
     List<detail> detailList =new ArrayList<>();
     detailAdapter detailAdapter=new detailAdapter();
@@ -118,7 +126,7 @@ public class TaskInfo extends Fragment {
         });
         name_edit=tinfo.findViewById(R.id.task_name_edit);
         name_text=tinfo.findViewById(R.id.task_name);
-
+        color_change=tinfo.findViewById(R.id.task_color);
         times=tinfo.findViewById(R.id.task_times);
         times.setOnLongClickListener(view -> {
             Vibrator v=(Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
@@ -126,7 +134,7 @@ public class TaskInfo extends Fragment {
             initDatePicker();
             return true;
         });
-        times.setOnClickListener(view -> {
+        color_change.setOnClickListener(view -> {
             selectColor();
         });
         DDL=tinfo.findViewById(R.id.task_ddl);
@@ -155,6 +163,7 @@ public class TaskInfo extends Fragment {
         details=tinfo.findViewById(R.id.task_progress_detail);
         details.setAdapter(detailAdapter);
         details.setLayoutManager(new LinearLayoutManager(getContext()));
+        details.addItemDecoration(getBlockDecoration());
         add_pro=tinfo.findViewById(R.id.new_progress);
         add_pro.setOnClickListener(view -> {
             detail nd=new detail();
@@ -164,12 +173,17 @@ public class TaskInfo extends Fragment {
             detailList.add(nd);
             MainActivity.getdb().getWritableDatabase().execSQL("insert into progress(name,status,seq,task) values (?,?,?,?)", new Object[] {"",0,nd.getSeq(),id});
             String sql="select last_insert_rowid() from progress";
-            Cursor c1=db.getWritableDatabase().rawQuery(sql, null);
+            Cursor c1=MainActivity.getdb().getWritableDatabase().rawQuery(sql, null);
             if(c1.moveToFirst()){
                nd.setId(c1.getString(0));
             }
             detailAdapter.notifyDataSetChanged();
+            setProcBar();
         });
+        prog_tr=tinfo.findViewById(R.id.task_progress_trans);
+        prog_bg=tinfo.findViewById(R.id.task_progress_bg);
+        prog=tinfo.findViewById(R.id.task_progress);
+        setColors();
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new  MyItemTouchHelperCallBack());
         itemTouchHelper.attachToRecyclerView(details);
         return tinfo;
@@ -225,7 +239,7 @@ public class TaskInfo extends Fragment {
             if (detailList != null) {
                 int from = viewHolder.getAbsoluteAdapterPosition();
                 int endPosition = target.getAbsoluteAdapterPosition();//在这里我一直在刷新最后移动到的位置，以便接下来做其他操作
-                Toast.makeText(getContext(), from+" "+endPosition, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), from+" "+endPosition, Toast.LENGTH_SHORT).show();
 
                 String n1=detailList.get(from).getName();
                 String n2=detailList.get(endPosition).getName();
@@ -273,6 +287,7 @@ public class TaskInfo extends Fragment {
         db=MainActivity.getdb();
         Cursor tinfo=db.getWritableDatabase().query("task",null,"id=?",new String[]{id},null,null,null);
         if(tinfo.moveToNext()){
+            color=tinfo.getInt(5);
             name_text.setText(tinfo.getString(1));
             name_edit.setText(tinfo.getString(1));
             ST.setText(tinfo.getString(2).isEmpty()?"-":tinfo.getString(2));
@@ -283,7 +298,7 @@ public class TaskInfo extends Fragment {
                 setTR(tinfo.getString(3));
             }
 
-            Toast.makeText(getContext(), tinfo.getString(1), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getContext(), tinfo.getString(1), Toast.LENGTH_SHORT).show();
         }
     }
     public void setDDL(String D){
@@ -297,6 +312,8 @@ public class TaskInfo extends Fragment {
     private void initDatePicker() {
         TaskDatePickerFragment dialog = new TaskDatePickerFragment();
         Bundle bundle = new Bundle();
+        bundle.putString("ddl",String.valueOf(DDL.getText()));
+        bundle.putString("st",String.valueOf(ST.getText()));
         dialog.setArguments(bundle);
         dialog.show(getParentFragmentManager(), "dialog_fragment");
     }
@@ -315,14 +332,14 @@ public class TaskInfo extends Fragment {
                     try{
                         db.getWritableDatabase().update("task",c,"id=?",new String[]{id});
                     }catch (Exception e){
-                        Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                     }
 
                 }else{
                     try{
                         db.getWritableDatabase().execSQL("insert into task(name,start_time,ddl,status,color,cata) values (?,?,?,?,?,?)", new Object[] { name_edit.getText().toString(),"","",1,0,cata });
                     }catch (Exception e){
-                        Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                     }
                     String sql="select last_insert_rowid() from task";
                     Cursor c=db.getWritableDatabase().rawQuery(sql, null);
@@ -350,10 +367,11 @@ public class TaskInfo extends Fragment {
             try{
                 db.getWritableDatabase().update("task",c,"id=?",new String[]{id});
             }catch (Exception e){
-                Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+
             }
             ((TaskFragment)(((MainActivity)getActivity()).getFragmentList().get(1))).refreshTaskBlock();
             ((HomeFragment)(((MainActivity)getActivity()).getFragmentList().get(0))).refreshData();
+            ((TaskFragment)(((MainActivity)getActivity()).getFragmentList().get(1))).informWidget();
         }
 
     }
@@ -361,6 +379,7 @@ public class TaskInfo extends Fragment {
     public void selectColor() {
             TaskColorSelectFragment dialog = new TaskColorSelectFragment();
             Bundle bundle = new Bundle();
+            bundle.putInt("color",color);
             dialog.setArguments(bundle);
             dialog.show(getParentFragmentManager(), "dialog_fragment");
     }
@@ -372,11 +391,13 @@ public class TaskInfo extends Fragment {
             try{
                 db.getWritableDatabase().update("task",c,"id=?",new String[]{id});
             }catch (Exception e){
-                Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
             }
             ((TaskFragment)(((MainActivity)getActivity()).getFragmentList().get(1))).refreshTaskBlock();
             ((HomeFragment)(((MainActivity)getActivity()).getFragmentList().get(0))).refreshData();
         }
+        this.color=color;
+        setColors();
     }
     public void setTR(String DDLtime){
         Date date;
@@ -424,6 +445,7 @@ public class TaskInfo extends Fragment {
             holder.name.setOnClickListener(view -> {
                 holder.name_edit.setText(holder.name.getText());
                 holder.name.setVisibility((View.INVISIBLE));
+                holder.del.setVisibility((View.INVISIBLE));
                 holder.name_edit.setVisibility(View.VISIBLE);
                 holder.save.setVisibility(View.VISIBLE);
             });
@@ -432,6 +454,7 @@ public class TaskInfo extends Fragment {
                 holder.name.setText(holder.name_edit.getText().toString());
                 holder.name.setVisibility((View.VISIBLE));
                 holder.name_edit.setVisibility(View.INVISIBLE);
+                holder.del.setVisibility((View.VISIBLE));
                 holder.save.setVisibility(View.INVISIBLE);
                 ContentValues c=new ContentValues();
                 c.put("name",holder.name_edit.getText().toString());
@@ -455,6 +478,7 @@ public class TaskInfo extends Fragment {
                     ContentValues c=new ContentValues();
                     c.put("status",isChecked);
                     MainActivity.getdb().getWritableDatabase().update("progress",c,"id="+ detailList.get(pos).getId(),null);
+                    setProcBar();
                 }
             });
             detail d = detailList.get(position);
@@ -489,6 +513,48 @@ public class TaskInfo extends Fragment {
             super(itemView);
 
         }
+
+    }
+    private RecyclerView.ItemDecoration getBlockDecoration() {
+        return new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                outRect.top = 5;
+                outRect.bottom=5;
+
+            }
+        };
+    }
+    void setColors(){
+        GradientDrawable gd1=new GradientDrawable();
+        gd1.setShape(GradientDrawable.RECTANGLE);
+        gd1.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+        gd1.setColor(color);
+        gd1.setCornerRadius(5);
+        color_change.setBackground(gd1);
+        setProcBar();
+    }
+    void setProcBar(){
+        GradientDrawable gd=new GradientDrawable();
+        gd.setShape(GradientDrawable.RECTANGLE);
+        gd.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+        int c[]={0xFFFFF7C2,color};
+        gd.setColors(c);
+        gd.setOrientation(GradientDrawable.Orientation.LEFT_RIGHT);
+        gd.setCornerRadius(3);
+        prog_bg.setBackground(gd);
+
+        String sql0 = "select count(*) from progress where task="+id;
+        String sql1 = "select count(*) from progress where status=1 and task="+id;
+        Cursor all = MainActivity.getdb().getWritableDatabase().rawQuery(sql0, null);
+        Cursor finished=MainActivity.getdb().getWritableDatabase().rawQuery(sql1, null);
+        all.moveToFirst();
+        finished.moveToFirst();
+        prog.setLayoutParams(new LinearLayout.LayoutParams(0,
+                LinearLayout.LayoutParams.MATCH_PARENT, all.getInt(0)-finished.getInt(0)));
+        prog_tr.setLayoutParams(new LinearLayout.LayoutParams(0,
+                LinearLayout.LayoutParams.MATCH_PARENT, finished.getInt(0)));
+
 
     }
 

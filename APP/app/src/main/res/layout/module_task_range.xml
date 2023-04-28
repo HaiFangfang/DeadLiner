@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/task_block"
+    android:layout_width="match_parent"
+    android:background="@drawable/taskintro"
+    android:layout_height="70dp"
+    android:orientation="vertical"
+    tools:context=".TaskBlock">
+
+    <!-- TODO: try update text -->
+
+    <TextView
+        android:id="@+id/range_range"
+        android:layout_width="50dp"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:shadowColor="@color/light_blue_200"
+        android:shadowRadius="10"
+        android:layout_height="match_parent"
+        android:textStyle="italic|bold"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/task_range_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:text="TextView"
+        android:textColor="@color/gray_blue_dark"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="@id/range_range"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <TextView
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TOTAL TIME"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:shadowColor="@color/light_blue_200"
+        android:shadowRadius="10"
+        android:layout_marginEnd="5dp"
+        app:layout_constraintBaseline_toBaselineOf="@id/task_range_name"
+        app:layout_constraintEnd_toStartOf="@+id/seconds" />
+    <TextView
+        android:id="@+id/seconds"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="20dp"
+        android:textSize="18sp"
+        android:textColor="@color/gray_blue_dark"
+        android:textStyle="bold"
+        android:text="TextView"
+        app:layout_constraintBaseline_toBaselineOf="@id/task_range_name"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

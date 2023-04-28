@@ -8,15 +8,24 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="blue">#FF039AC5</color>
+    <color name="orange_light">#FF9940</color>
+    <color name="orange_black">#4A0D0B</color>
+    <color name="orange_dark">#C34121</color>
     <color name="orange">#FFE99260</color>
+    <color name="red">#FFE99290</color>
+    <color name="gray_blue_dark">#FF598092</color>
+    <color name="gray_blue_light">#FFACD6DA</color>
     <color name="gray_blue">#FFD2E8EC</color>
+    <color name="trans_gray_blue">#88D2E8EC</color>
     <color name="trans_white_heavy">#AAFFFFFF</color>
     <color name="light_blue">#FFBCE6EE</color>
     <color name="transparent">#00000000</color>
     <color name="transparent_white">#33FFFFFF</color>
     <color name="light_blue_50">#FFE1F5FE</color>
     <color name="light_blue_200">#FF81D4FA</color>
-    <color name="trans_light_blue_600">#88BCE6EE</color>
+    <color name="trans_light_blue_200">#2281D4FA</color>
+    <color name="trans_light_blue_600">#55598092</color>
+    <color name="trans_light_blue_600_">#8881D4FA</color>
     <color name="light_blue_600">#FF039BE5</color>
     <color name="light_blue_900">#FF01579B</color>
 </resources>

@@ -46,6 +46,8 @@ public class TaskDatePickerFragment extends BottomSheetDialogFragment {
     DatePicker dp;
     DatePicker dp_start;
     TimePicker tp;
+    String ddl;
+    String st;
     /**
      * 顶部向下偏移量
      */
@@ -55,6 +57,8 @@ public class TaskDatePickerFragment extends BottomSheetDialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        ddl=getArguments().getString("ddl");
+        st=getArguments().getString("st");
         if (getContext() == null) {
             return super.onCreateDialog(savedInstanceState);
         }
@@ -72,14 +76,33 @@ public class TaskDatePickerFragment extends BottomSheetDialogFragment {
         resizePikcer(dp_start,300,130);
         resizePikcer(tp,300,100);
         SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-dd-HH-mm-ss");
+        SimpleDateFormat forma = new SimpleDateFormat("YYYY-MM-dd HH:mm");
+        SimpleDateFormat form = new SimpleDateFormat("YYYY-MM-dd");
         Date curDate = new Date(System.currentTimeMillis());
 //获取当前时间
-        String str = formatter.format(curDate);
-        String[] strs=str.split("-");
-        Toast.makeText(getContext(), strs[0]+strs[1]+strs[2], Toast.LENGTH_SHORT).show();
-        dp.init(Integer.valueOf(strs[0]),Integer.valueOf(strs[1])-1,Integer.valueOf(strs[2]),null);
-        tp.setMinute(0);
-        tp.setHour(0);
+        if(!ddl.equals("-")){
+          String d[]=ddl.split(" ");
+          String c[]=d[0].split("-");
+          String t[]=d[1].split(":");
+          dp.init(Integer.valueOf(c[0]),Integer.valueOf(c[1])-1,Integer.valueOf(c[2]),null);
+            tp.setMinute(Integer.valueOf(t[0]));
+            tp.setHour(Integer.valueOf(t[1]));
+        }else{
+            ddl="";
+            String str = formatter.format(curDate);
+            String[] strs=str.split("-");
+            dp.init(Integer.valueOf(strs[0]),Integer.valueOf(strs[1])-1,Integer.valueOf(strs[2]),null);
+            tp.setMinute(0);
+            tp.setHour(0);
+        }
+        if(!st.equals("-")){
+            String c[]=st.split("-");
+            dp_start.init(Integer.valueOf(c[0]),Integer.valueOf(c[1])-1,Integer.valueOf(c[2]),null);
+        }else{
+            st="";
+        }
+
+
         ImageView ret=dialogView.findViewById(R.id.date_picker_confirm);
         ret.setOnClickListener(view -> {
             int y=dp.getYear();
@@ -106,7 +129,6 @@ public class TaskDatePickerFragment extends BottomSheetDialogFragment {
                 }
             }
             String ST=ys+"-"+ms+"-"+ds;
-            Toast.makeText(getContext(), DDL, Toast.LENGTH_SHORT).show();
             ((TaskFragment)(((MainActivity)getActivity()).getFragmentList().get(1))).page.refreshTimes(DDL,Time,ST);
 
             dismiss();

@@ -3,7 +3,7 @@
     android:description="@string/app_widget_description"
     android:initialKeyguardLayout="@layout/app_widget"
     android:initialLayout="@layout/app_widget"
-    android:minWidth= "250dip"
+    android:minWidth= "100dip"
     android:minHeight= "100dip"
     android:previewImage="@drawable/example_appwidget_preview"
     android:resizeMode="horizontal|vertical"

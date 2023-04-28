@@ -2,8 +2,16 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="123dp"
-    android:background="@color/white"
-    android:id="@+id/newBlock"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/newBlock">
+
+    <ImageView
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/icon_add_l"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,7 +15,7 @@ public class stdDialog extends Dialog implements View.OnClickListener {
 
     private TextView mTitle, mContent;
     private TextView mConfirm, mCancel;
-
+boolean cata;
     private Context mContext;
     private String content;
     private OncloseListener listener;
@@ -40,11 +40,12 @@ public class stdDialog extends Dialog implements View.OnClickListener {
         this.listener = listener;
     }
 
-    public stdDialog(@NonNull Context context, int themeResId, String content, OncloseListener listener) {
+    public stdDialog(@NonNull Context context, int themeResId, String content,Boolean Cata, OncloseListener listener) {
         super(context, themeResId);
         this.mContext = context;
         this.content = content;
         this.listener = listener;
+        this.cata=Cata;
     }
 
     protected stdDialog(@NonNull Context context, boolean cancelable, @Nullable OnCancelListener cancelListener) {
@@ -108,7 +109,12 @@ public class stdDialog extends Dialog implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.module_pop_dialog);
+        if(cata){
+            setContentView(R.layout.module_pop_dialog);
+        }else{
+            setContentView(R.layout.module_pop_dialog_task);
+        }
+
         setCanceledOnTouchOutside(true);
         mTitle = findViewById(R.id.dialog_title);
         mContent = findViewById(R.id.dialog_content);
@@ -122,15 +128,14 @@ public class stdDialog extends Dialog implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.confirm:
+//                MainActivity.getdb().getWritableDatabase().delete("cata","id=?",new String[]{content});
+//                MainActivity.getdb().getWritableDatabase().delete("task","cata=?",new String[]{content});
                 if (listener != null) {
                     listener.onClick(true);
                 }
                 this.dismiss();
                 break;
             case R.id.cancel:
-                if (listener != null) {
-                    listener.onClick(false);
-                }
                 this.dismiss();
                 break;
         }

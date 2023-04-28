@@ -33,6 +33,12 @@ public class MyDBhelper extends SQLiteOpenHelper {
             "seq integer NOT NULL,"+
             "status boolean NOT NULL," +
             "task integer NOT NULL)";
+    public static final String CREATE_TIMES = "create table times(" +
+            //primary key 将id列设为主键    autoincrement表示id列是自增长的
+            "id integer primary key autoincrement," +
+            "seconds integer NOT NULL," +
+            "ts DATETIME DEFAULT CURRENT_TIMESTAMP," +
+            "task integer NOT NULL)";
 
     private SQLiteDatabase db;
 
@@ -52,6 +58,7 @@ public class MyDBhelper extends SQLiteOpenHelper {
             db.execSQL(CREATE_CATAS);
             db.execSQL(CREATE_TASKS);
             db.execSQL(CREATE_PROGRESS);
+            db.execSQL(CREATE_TIMES);
         } catch (Exception e){
             Log.e("exp",e.toString());
         }

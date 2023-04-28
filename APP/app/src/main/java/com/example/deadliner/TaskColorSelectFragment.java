@@ -15,6 +15,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,11 +27,11 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 public class TaskColorSelectFragment extends BottomSheetDialogFragment {
-    String id;
+  Integer color=0;
     private ColorBarView mCbv_color_pick;
     private TextView mTv_text_color_b;
     private View big;
-    Button confirm;
+    ImageView confirm;
     /**
      * 顶部向下偏移量
      */
@@ -40,7 +41,7 @@ public class TaskColorSelectFragment extends BottomSheetDialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        id=getArguments().getString("id");
+          color=getArguments().getInt("color");
 //        Toast.makeText(getContext(), id, Toast.LENGTH_SHORT).show();
 
         if (getContext() == null) {
@@ -118,6 +119,7 @@ public class TaskColorSelectFragment extends BottomSheetDialogFragment {
     private void initView() {
         mCbv_color_pick = big.findViewById(R.id.cbv_color_pick);
         mTv_text_color_b = big.findViewById(R.id.tv_text_color_b);
+
     }
 
     private void initListener() {
@@ -137,7 +139,9 @@ public class TaskColorSelectFragment extends BottomSheetDialogFragment {
             }
         });
         mCbv_color_pick.setCurrentColor(-16711726);
-
+        if(color!=0){
+            mCbv_color_pick.setCurrentColor(color);
+        }
     }
 
 //    @Override

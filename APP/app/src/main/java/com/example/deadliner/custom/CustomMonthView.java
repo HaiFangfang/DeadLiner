@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.text.TextUtils;
-import android.widget.Toast;
 
 import com.haibin.calendarview.BaseMonthView;
 import com.haibin.calendarview.Calendar;
@@ -146,7 +145,7 @@ public class CustomMonthView extends MonthView {
         int top = y - mItemHeight / 3;
 
         if (calendar.isCurrentDay() && !isSelected) {
-            canvas.drawCircle(cx+2, cy, mRadius, mSelectedPaint);
+            canvas.drawCircle(cx+2, cy, mRadius-5, mSelectedPaint);
         }
 
 //        if (hasScheme) {
@@ -255,8 +254,15 @@ public class CustomMonthView extends MonthView {
                 float ratio=hsv[0]/360;
                 float spand=end-start;
                 float stripy=start+spand*ratio;
-
-                mTextPaint.setColor(tmp.getShcemeColor());
+                if(calendar.isCurrentMonth()){
+                    mTextPaint.setColor(tmp.getShcemeColor());
+                }else{
+                    int c=0;
+                    hsv[1]=hsv[1]/3f;
+                    hsv[2]=hsv[2]-0.05f;
+                    c=Color.HSVToColor(hsv);
+                    mTextPaint.setColor(c);
+                }
                 canvas.drawCircle(oleft,stripy,8,mTextPaint);
                 canvas.drawCircle(oright,stripy,8,mTextPaint);
                 if(tmp.getScheme().equals("D")){
@@ -293,7 +299,7 @@ public class CustomMonthView extends MonthView {
 
         mRectPaint.setStyle(Paint.Style.STROKE);
         mRectPaint.setStrokeWidth(dipToPx(getContext(), 1.3f));
-        mRectPaint.setColor(0x33039AC5);
+        mRectPaint.setColor(0x44039AC5);
         PorterDuffXfermode mode=new PorterDuffXfermode(PorterDuff.Mode.DARKEN);
         mRectPaint.setXfermode(mode);
         if(calendar.getWeek()==6){

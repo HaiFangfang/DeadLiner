@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.icu.text.DateFormat;
 import android.icu.text.SimpleDateFormat;
 import android.os.Build;
@@ -27,7 +28,6 @@ import android.widget.Adapter;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.haibin.calendarview.Calendar;
 import com.haibin.calendarview.CalendarLayout;
@@ -145,10 +145,21 @@ public class HomeFragment extends Fragment implements
         inschAdapter=new inSchAdapter();
         inSch.setAdapter(inschAdapter);
         inSch.setLayoutManager(new LinearLayoutManager(getContext()));
-
+        inSch.addItemDecoration(getBlockDecoration());
         return home;
     }
+    private RecyclerView.ItemDecoration getBlockDecoration() {
+        return new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                outRect.top = 15;
+                outRect.bottom=5;
+                outRect.left=20;
+                outRect.right=20;
 
+            }
+        };
+    }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -157,7 +168,7 @@ public class HomeFragment extends Fragment implements
         android.icu.util.Calendar c= android.icu.util.Calendar.getInstance();
         daySelectd=c.get(android.icu.util.Calendar.YEAR
         )+"-"+(c.get(android.icu.util.Calendar.MONTH)+1)+"-"+c.get(android.icu.util.Calendar.DATE);
-        Toast.makeText(getContext(), daySelectd, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getContext(), daySelectd, Toast.LENGTH_SHORT).show();
         taskClassify(daySelectd);
     }
 
@@ -188,7 +199,7 @@ public class HomeFragment extends Fragment implements
                 if(ddlkey.compareTo(stkey)==0){//the same day
                     ddlutil.set(Integer.valueOf(strtrs[0]),Integer.valueOf(strtrs[1])-1,Integer.valueOf(strtrs[2]),0,0);
                     stutil.set(Integer.valueOf(strtrs1[0]),Integer.valueOf(strtrs1[1])-1,Integer.valueOf(strtrs1[2]),0,0);
-                    Toast.makeText(getContext(), transToKey(ddlutil), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getContext(), transToKey(ddlutil), Toast.LENGTH_SHORT).show();
                     Calendar c=map.get(transToKey(ddlutil));
                     if(c==null){
                         c=getSchemeCalendar(Integer.valueOf(strtrs[0]), Integer.valueOf(strtrs[1]), Integer.valueOf(strtrs[2]), color, "SE");
@@ -387,7 +398,7 @@ public class HomeFragment extends Fragment implements
                 ddlc.set(Integer.valueOf(ddls[0]),Integer.valueOf(ddls[1])-1,Integer.valueOf(ddls[2]),0,0);
 
                 if(!today.after(ddlc)&&!today.before(stc)){
-                    Toast.makeText(getContext(),date+ddl+st, Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getContext(),date+ddl+st, Toast.LENGTH_SHORT).show();
 
                     inSchList.add(tb);
                 }else if(!today.before(ddlc)&&!today.after(stc)){
@@ -472,7 +483,30 @@ public class HomeFragment extends Fragment implements
                 try {
                     DateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm");
                     date = df.parse(tb.getDDL());
-
+                    holder.daysRemain.setText(ShowTimeIntervalDDL(date));
+                    if (String.valueOf(holder.daysRemain.getText()).indexOf("超时") != - 1){
+                        holder.rmHinter.setText("TIMEOUT");
+                        holder.daysRemain.setText(String.valueOf(holder.daysRemain.getText()).substring(3));
+                    }else{
+                        holder.rmHinter.setText("REMAINS");
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (tb.getDDL().isEmpty()) {
+                holder.daysRemain.setText("余 -");
+            } else {
+                try {
+                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                    date = df.parse(tb.getSttime());
+                    holder.daysStarted.setText(ShowTimeIntervalST(date));
+                    if(holder.daysStarted.getText().equals("NOT STARTED")){
+                        holder.stHinter.setText("NOT STARTED");
+                        holder.daysStarted.setText("");
+                    }else{
+                        holder.stHinter.setText("STARTED");
+                    }
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -505,15 +539,20 @@ public class HomeFragment extends Fragment implements
     public static class inSchViewHolder extends RecyclerView.ViewHolder {
         TextView taskName;
         TextView daysRemain;
-        TextView textView3;
+        TextView daysStarted;
         TextView DDL;
+        TextView stHinter;
+        TextView rmHinter;
         ConstraintLayout constraintLayout;
 
         public inSchViewHolder(@NonNull View itemView) {
             super(itemView);
             taskName = itemView.findViewById(R.id.task_block_name);
             daysRemain = itemView.findViewById(R.id.task_block_days_remain);
+            daysStarted=itemView.findViewById(R.id.task_block_sted);
             DDL = itemView.findViewById(R.id.task_block_ddl);
+            stHinter = itemView.findViewById(R.id.st_hinter);
+            rmHinter = itemView.findViewById(R.id.rm_hinter);
             constraintLayout = itemView.findViewById(R.id.task_block);
         }
     }
@@ -533,5 +572,31 @@ public class HomeFragment extends Fragment implements
             }
         }
         return key;
+    }
+    public static String ShowTimeIntervalDDL(Date date) {
+        long lDate1 = date.getTime();
+        long lDate2 =  new Date(System.currentTimeMillis()).getTime();
+        long diff = lDate1 - lDate2;
+        long day = diff / (24 * 60 * 60 * 1000);
+        long hour = diff / (60 * 60 * 1000) - day * 24;
+        long min = diff / (60 * 1000) - day * 24 * 60 - hour * 60;
+        long sec = diff / 1000 - day * 24 * 60 * 60 - hour * 60 * 60 - min * 60;
+        if(day<0||hour<0||min<0||sec<0){
+            return "超时 "+String.valueOf(-day)+"D "+String.valueOf(-hour)+"H";
+        }
+        return String.valueOf(day)+"D "+String.valueOf(hour)+"H";
+    }
+    public static String ShowTimeIntervalST(Date date) {
+        long lDate1 = date.getTime();
+        long lDate2 =  new Date(System.currentTimeMillis()).getTime();
+        long diff = lDate2 - lDate1;
+        long day = diff / (24 * 60 * 60 * 1000);
+        long hour = diff / (60 * 60 * 1000) - day * 24;
+        long min = diff / (60 * 1000) - day * 24 * 60 - hour * 60;
+        long sec = diff / 1000 - day * 24 * 60 * 60 - hour * 60 * 60 - min * 60;
+        if(day<0||hour<0||min<0||sec<0){
+            return "NOT STARTED";
+        }
+        return String.valueOf(day)+"D";
     }
 }

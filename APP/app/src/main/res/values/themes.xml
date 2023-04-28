@@ -28,6 +28,6 @@
 
     <style name="Theme.DeadLiner.AppWidgetContainer" parent="Theme.DeadLiner.AppWidgetContainerParent">
         <!-- Apply padding to avoid the content of the widget colliding with the rounded corners -->
-        <item name="appWidgetPadding">16dp</item>
+        <item name="appWidgetPadding">12dp</item>
     </style>
 </resources>
